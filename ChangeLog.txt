@@ -1,0 +1,128 @@
+4.0.3a_2010.12.09_r1 - December 9, 2010 by Leliel
+ - Add weapon support
+ - Restore the possibility to disable Perl Player Buff
+ - Some fixes and improvements
+
+
+4.0.3_2010.12.06_1 beta - December 6, 2010 by Leliel
+ - Rewrite the way to anchors buffs and debuffs according to changes from 4.0.1
+ - Add x and Y offset settings
+ - Add vertical Spacing
+ - Buff and Debuff are now separeted, Debuff start a new row.
+ - Weapon currently NOT handled
+
+
+4.0.1_20101019_1 - October 16, 2010 by Leliel
+ - Fix wrong scaling behavior related to special bar
+ - Inverted cooldown filling effect to be coherent with Perl (you need something like OmniCC to see native cooldown effect on Buff)
+ - some tiny improvements :p
+
+
+4.0.1_20101016_2 beta - October 16, 2010 by Leliel
+ - Fix bug related to special bar (totem/rune): now correctly handle :)
+
+
+4.0.1_20101016_1 beta - October 16, 2010 by Leliel
+ - Fix bug introduced by new power bar, now taking account there height when displayed.
+ - Workaround for the "Cancel Buff" bug , now a right click on a buff show the original buff bar, so you can cancel it up there. The original buff bar can be hidden with a new click, or will auto hide after 10 seconds.
+ - Little perf improvement: now only refresh display 10 times per second, this reduce the cpu usage and keep the display acceptable, report if not.
+
+
+4.0.1_20101014_1 beta - October 14, 2010 by Leliel
+ - Fast update and fix for 4.0.1, not guaranted bug free !!    
+ - Cant cancel buff with right click right now :(
+
+
+3.3.0_20100124_1 - January 24, 2010 by Leliel
+ - minor fix
+   * Scale was reset to default (100%) to each reload
+   * Vertical spacing wasn't properly set to 1 on relad in few cases
+
+
+3.3.0_20091230_1 - December 30, 2009 by Leliel
+ - Public release of the 3.3.0 version
+ - last minute minor change and fix
+   * If original text timer are hidden, horizontal and vertical space are set to 1 pixel (but you can still rise horizontal space via the perl config panel, this will become a toggleable feature)
+   * Fix buff position bug when class-level frame is visible and xp bar is too 
+ - Review version format
+ - Feel free to do any suggestions or to report any bug to me on Curse or by mail/msn : leliel@13fr.com
+
+
+30300.1 - December 28, 2009 by Leliel
+ - Updated and tested for wow 3.3.0 and Perl 3.09
+ - Enhanced features
+ - Enhanced config frame
+ - Some optimizations, many left to do
+ - TODO: localization
+
+
+30200.2 - December 23, 2009 by Leliel
+ - Review of dev plan
+
+
+30200.1 - December 22, 2009 by Leliel
+ - Fix bug: the fade in/out effect was broken
+ - Reverse some features to Perl Player Buff original
+ - Prepare code for additional features, all disable by default
+ - Create Config Panel base code
+ - Current plan of developpement:
+   * Revert display mechanism to original
+   * Add option to choose the number of buff per line (default 10) (almost done)
+   * Add native cooldown support, compatible with OmniCC and co. (almost done)
+   * Allow to change anchor offset (configurable anchor offset)
+   * Allow to expand buff up beside down (configurable row direction)
+   * Handle weapon enchant/buff
+   * Display castable/curable only
+ - Need to update and test on wow 3.3.0 (currently developing on wow 3.2.2a)
+
+
+30200.1 - September 18, 2009 by Leliel
+ - Updated for Perl Classic 3.08
+ - Big rework on the display mechanism, the number of Buff per line if now relative to the width of the Player Frame, including:
+   * The class icon
+   * The width of each buff's buttons
+   * The horizontal spacing
+   * The scale   
+ - Display Buff first, then Debuff      
+ - Should be up to 40 Buff/Debuff (was 24)
+ - CHANGE: Seconds no longer hidden under 10min left even if options checked, so you will see 10min then 9:59, it's not a bug :)
+ - Feel free to report me any bug on Curse or my mail/msn : leliel@13fr.com
+
+20003.2 - February 28, 2007
+ - Updated for Perl Classic 2.04
+ - Removed a tooltip from the XML that was no longer being used
+ - Minor speed improvement
+
+20003.1 - January 9, 2007
+ - Updated TOC Interface version to 20003
+
+20000.3 - December 15, 2006
+ - Added myAddOns support
+
+20000.2 - December 10, 2006
+ - Buffs now start at the correct position
+ - Optimized the debuff type call
+
+20000.1 - December 10, 2006
+ - Updated TOC Interface version to 20000
+ - Added support for debuff types
+ - Various code changes and cleanup
+ - Removed myAddOns support
+
+11200.4 - November 3, 2006
+ - Removed event error messages caused by other mods tampering with my events
+
+11200.3 - October 23, 2006
+ - Changed the event system to a more efficient method (Thanks Zek)
+ - Changed how certain frame scripts are set up (Thanks Zek)
+ - Removed loading messages from all except Perl_Config
+
+11200.2 - September 27, 2006
+ - Fixed an issue with buff number 10 being out of position
+
+11200.1 - September 22, 2006
+ - Reintroduced mod due to high demand
+ - Added support for the profile system added in 0.78
+ - Updated Simplified Chinese translations (Thanks middle007)
+ - Can now hide seconds from being displayed
+ - Can now set the horizontal spacing between buffs

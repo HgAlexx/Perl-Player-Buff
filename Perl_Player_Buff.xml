@@ -1,0 +1,38 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Perl_Player_Buff.lua"/>
+
+	<!-- Buffs Frame -->
+	<Frame name="Perl_Player_BuffFrameFixAnchor" parent="Perl_Player_Frame" frameStrata="MEDIUM">
+		<Size>
+			<AbsDimension x="1" y="1"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="Perl_Player_StatsFrame">
+				<Offset>
+					<AbsDimension x="0" y="0"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Frame name="Perl_Player_BuffFrame">
+				<Size>
+					<AbsDimension x="260" y="28"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="Perl_Player_Buff_Script_Frame" movable="true" hidden="false" enableMouse="true">
+		<Scripts>
+			<OnLoad function="Perl_Player_Buff_OnLoad" />
+		</Scripts>
+	</Frame>
+</Ui>

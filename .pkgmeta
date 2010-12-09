@@ -1,0 +1,10 @@
+package-as: Perl_Player_Buff
+
+manual-changelog:
+    filename: ChangeLog.txt
+    markup-type: plain
+
+enable-nolib-creation: no
+
+move-folders:
+    Perl_Player_Buff/Perl_Player_Buff_Enhanced_Config:  Perl_Player_Buff_Enhanced_Config
