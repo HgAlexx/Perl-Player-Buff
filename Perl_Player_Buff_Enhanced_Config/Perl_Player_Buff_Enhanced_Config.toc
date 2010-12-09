@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: Perl Player Buff Enhanced Config using |cff7fff7f LibDataBorker|r
 ## Notes: Perl Player Buff Enhanced Config Allow to changes additional settings of Perl Player Buff
-## Version: 4.0.3a_2010.12.09_r1
+## Version: 4.0.3a_2010.12.09_@project-version@
 ## Author: microAlexx AKA Leliel, Yui, Nerv, Neon at EU-Ysondre
 ## Dependencies: Perl_Player_Buff
 

@@ -2,7 +2,7 @@
 ## Title: Perl Player Buff, fan updated by Leliel
 ## Notes: Displays buffs below the Player Frame
 ## Author: microAlexx AKA Leliel, Yui, Nerv, Neon at EU-Ysondre
-## Version: 4.0.3a_2010.12.09_r1
+## Version: 4.0.3a_2010.12.09_@project-version@
 ## Dependencies: Perl_Config, Perl_Player
 ## OptionalDeps: Perl_Player_Buff_Enhanced_Config
 ## SavedVariables: Perl_Player_Buff_Config, PPB_Enhanced_Config
