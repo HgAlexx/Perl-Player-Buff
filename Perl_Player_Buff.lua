@@ -83,10 +83,13 @@ local playerName, playerClass;
 local SpecialBar = nil;
 local WeaponEnchantDuration = 60*60;
 
+local Perl_Player_Buff_Script_Frame = nil;
+
 ----------------------
 -- Loading Function --
 ----------------------
 function Perl_Player_Buff_OnLoad(self, ...)
+    Perl_Player_Buff_Script_Frame = self;
     -- Events
     self:RegisterEvent("PLAYER_ENTERING_WORLD");
     self:RegisterEvent("VARIABLES_LOADED");
@@ -179,7 +182,7 @@ function Perl_Player_Buff_Initialize(self)
         -- WeaponEnchantDuration = 60*30;             -- Shaman has 30min WeaponEnchant, and what is the player use a oil ?
         local Perl_Player_Vars = Perl_Player_GetVars();
         if Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
-            self:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide
+            Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide
         end;
     elseif playerClass == "DEATHKNIGHT" then -- Rune Frame
         Original_Perl_Player_Set_Show_Rune_Frame = Perl_Player_Set_Show_Rune_Frame;

@@ -4,6 +4,24 @@
 ## Author: microAlexx AKA Leliel, Yui, Nerv, Neon at EU-Ysondre
 ## Version: 4.0.3a_2010.12.09_@project-version@
 ## Dependencies: Perl_Config, Perl_Player
-## OptionalDeps: Perl_Player_Buff_Enhanced_Config
 ## SavedVariables: Perl_Player_Buff_Config, PPB_Enhanced_Config
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\LibSimpleOptions\LibSimpleOptions-1.0.xml
+Libs\LibDataBroker\LibDataBroker-1.1.lua
+
+Localizations\Localization.enUS.lua
+
+Localizations\Localization.deDE.lua
+Localizations\Localization.esES.lua
+Localizations\Localization.esMX.lua
+Localizations\Localization.frFR.lua
+Localizations\Localization.koKR.lua
+Localizations\Localization.ruRU.lua
+Localizations\Localization.zhCN.lua
+Localizations\Localization.zhTW.lua
+
 Perl_Player_Buff.xml
+
+Perl_Player_Buff_Enhanced_Config.lua
