@@ -1,4 +1,4 @@
-package-as: Perl_Player_Buff
+package-as: Perl_Player_Buff_v4.0.3a_2010.12.10
 
 manual-changelog:
     filename: ChangeLog.txt
