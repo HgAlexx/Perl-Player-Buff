@@ -7,4 +7,5 @@ manual-changelog:
 enable-nolib-creation: no
 
 move-folders:
+    Perl_Player_Buff_v4.0.3a_2010.12.10:  Perl_Player_Buff
     Perl_Player_Buff/Perl_Player_Buff_Enhanced_Config:  Perl_Player_Buff_Enhanced_Config
