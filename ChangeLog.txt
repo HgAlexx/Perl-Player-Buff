@@ -1,4 +1,4 @@
-4.0.3a_2010.12.11_r8 - December 11, 2010 by Leliel
+4.0.3a_2010.12.11_r11 - December 11, 2010 by Leliel
  * Fix a bug which only Shaman could have got :)
  + Localization ! Fill free to add your translation
  * Merge Perl_Player_Buff and Perl_Player_Buff_Enhanced_Config into one addon
