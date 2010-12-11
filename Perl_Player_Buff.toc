@@ -2,9 +2,13 @@
 ## Title: Perl Player Buff, fan updated by Leliel
 ## Notes: Displays buffs below the Player Frame
 ## Author: microAlexx AKA Leliel, Yui, Nerv, Neon at EU-Ysondre
-## Version: 4.0.3a_2010.12.09_@project-version@
+## Version: 4.0.3a_2010.12.11_@project-version@
 ## Dependencies: Perl_Config, Perl_Player
 ## SavedVariables: Perl_Player_Buff_Config, PPB_Enhanced_Config
+## X-Curse-Packaged-Version: r7
+## X-Curse-Project-Name: Perl Player Buff
+## X-Curse-Project-ID: perl-player-buff
+## X-Curse-Repository-ID: wow/perl-player-buff/mainline
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml

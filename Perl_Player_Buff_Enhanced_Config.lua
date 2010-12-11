@@ -13,8 +13,6 @@ Perl Player Buff Enhanced Config :
 local addonName, _ = ...;
 addonName = string.replace(addonName, "_", " ");
 
-Perl_Player_Buff_Enhanced_Config_Version = GetAddOnMetadata(addonName, 'Version') or "unknown";
-
 
 PPBECConfigPanel = nil;
 
@@ -42,6 +40,9 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
         elseif button == 'LeftButton' then
             if Perl_Config_Toggle then
                 Perl_Config_Toggle();
+                if Perl_Config_Frame:IsShown() then
+                    Perl_Config_Player_Buff_Display();
+                end
             end
         end
     end,
@@ -51,7 +52,7 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
             tooltip:AddLine(PPBEC_Localization["PPBEC/ToolTip/LeftButtonDesc"])
             tooltip:AddLine(PPBEC_Localization["PPBEC/ToolTip/RightButtonDesc"])
             tooltip:AddLine('')
-            tooltip:AddLine(string.format(PPBEC_Localization["FT_Version"], Perl_Player_Buff_Enhanced_Config_Version))
+            tooltip:AddLine(string.format(PPBEC_Localization["FT_Version"], Perl_Player_Buff_Version))
     end,
 })
 -- PPBEC_Localization[]
