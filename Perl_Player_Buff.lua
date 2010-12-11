@@ -29,7 +29,9 @@ Planned features:
 ---------------
 -- Variables --
 ---------------
-local Perl_Player_Buff_Version = GetAddOnMetadata('Perl_Player_Buff', 'Version');
+local addonName, _ = ...;
+Perl_Player_Buff_Version = GetAddOnMetadata(addonName, 'Version');
+
 
 Perl_Player_Buff_Config = {};
 
@@ -181,7 +183,7 @@ function Perl_Player_Buff_Initialize(self)
         SpecialBar = TotemFrame;
         -- WeaponEnchantDuration = 60*30;             -- Shaman has 30min WeaponEnchant, and what is the player use a oil ?
         local Perl_Player_Vars = Perl_Player_GetVars();
-        if Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
+        if Perl_Player_Buff_Script_Frame and Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
             Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide
         end;
     elseif playerClass == "DEATHKNIGHT" then -- Rune Frame
@@ -194,8 +196,6 @@ function Perl_Player_Buff_Initialize(self)
     
     hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", Perl_Player_Buff_Align );                           -- handle buff anchor
     hooksecurefunc("DebuffButton_UpdateAnchors", Perl_Player_Buff_DebuffButton_UpdateAnchors );          -- handle debuff anchor
-    -- TemporaryEnchantFrame:HookScript("OnUpdate", Perl_Player_Buff_TemporaryEnchantFrame_OnUpdate);        -- TODO: handle temp enchanty anchor
-    -- hooksecurefunc( "TemporaryEnchantFrame_Update", Perl_Player_Buff_TemporaryEnchantFrame_OnUpdate );            -- handle buff, debuff and temp enchant
     hooksecurefunc("AuraButton_UpdateDuration", Perl_Player_Buff_AuraButton_UpdateDuration );            -- handle buff, debuff and temp enchant
     
     Initialized = 1;
