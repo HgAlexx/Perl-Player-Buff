@@ -91,11 +91,11 @@ local Perl_Player_Buff_Script_Frame = nil;
 -- Loading Function --
 ----------------------
 function Perl_Player_Buff_OnLoad(self, ...)
+    --save script frame
     Perl_Player_Buff_Script_Frame = self;
     -- Events
     self:RegisterEvent("PLAYER_ENTERING_WORLD");
-    self:RegisterEvent("VARIABLES_LOADED");
-    
+    self:RegisterEvent("PLAYER_LOGIN");
     -- Scripts
     self.TimeSinceLastUpdate = 0;
     self:SetScript("OnEvent", Perl_Player_Buff_OnEvent);
@@ -108,7 +108,7 @@ end
 function Perl_Player_Buff_OnEvent(self, event, ...)
     local func = Perl_Player_Buff_Events[event];
     if (func) then
-        func(self);
+        func();
     else
         if Perl_Player_Buff_DebugMode then
             DEFAULT_CHAT_FRAME:AddMessage("Perl Player Buff: Report the following event error to the author: "..event);
@@ -116,19 +116,22 @@ function Perl_Player_Buff_OnEvent(self, event, ...)
     end
 end
 
-function Perl_Player_Buff_Events:VARIABLES_LOADED(self)
-    Perl_Player_Buff_Initialize(self);
+function Perl_Player_Buff_Events:PLAYER_LOGIN()
+    Perl_Player_Buff_Initialize();
+    Perl_Player_Buff_Script_Frame:UnRegisterEvent("PLAYER_LOGIN");
 end
-Perl_Player_Buff_Events.PLAYER_ENTERING_WORLD = Perl_Player_Buff_Events.VARIABLES_LOADED;
+function Perl_Player_Buff_Events:PLAYER_ENTERING_WORLD()
+    Perl_Player_Buff_Initialize();
+end
 
-function Perl_Player_Buff_Events:PLAYER_TOTEM_UPDATE(self)
+function Perl_Player_Buff_Events:PLAYER_TOTEM_UPDATE()
     Perl_Player_Buff_Align(true);
 end
 
 -------------------------------
 -- Loading Settings Function --
 -------------------------------
-function Perl_Player_Buff_Initialize(self)
+function Perl_Player_Buff_Initialize()
     -- Code to be run after zoning or logging in goes here
     if (Initialized) then
         
@@ -413,6 +416,15 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
                     if (enchantCount == 1) then
                         buff:SetPoint("TOPLEFT", Perl_Player_BuffFrame, "TOPLEFT", 0, 0);
                         TopLeftAnchorBuff = buff;
+                    elseif ((buffButtonIndex-1)%PPBEC_BuffPerLine) == 0 then
+                        -- new line, Set Current to topleft
+                        CurrentAnchorBuff = TopLeftAnchorBuff;
+                        
+                        -- and Set next Topleft to current one
+                        TopLeftAnchorBuff = buff;
+                        
+                        -- Set Next Button Anchor and Position, always on CurrentAnchorBuff
+                        buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "BOTTOMLEFT", 0, -PPBEC_VerticalSpacing); -- TODO orientation: do not negate verticalSpacing if going UP
                     else
                         -- Set Next Button Anchor and Position, always on CurrentAnchorBuff
                         buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "TOPRIGHT", horizontalspacing, 0);
@@ -456,6 +468,7 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
         local cooldownFrame = _G[buff:GetName().."Cooldown"];
         if cooldownFrame then
             CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+            buff.cdInitiated = false;
         end;
     end -- for
     
@@ -510,6 +523,7 @@ function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
         local cooldownFrame = _G[buff:GetName().."Cooldown"];
         if cooldownFrame then
             CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+            buff.cdInitiated = false;
         end;
     end;
 end
@@ -529,7 +543,14 @@ function Perl_Player_Buff_TemporaryEnchantFrame_OnUpdate(self, elapsed)
     TemporaryEnchantFrame_Update(GetWeaponEnchantInfo());
 end
 
+local UpdateDurationLastTime = 0;
 function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
+    local t = GetTime();
+    if (t - PPBEC_UpdateInterval < UpdateDurationLastTime) then
+        return nil;
+    end
+    UpdateDurationLastTime = GetTime();
+    
     if showbuffs ~= 1 then
         local cooldownFrame = _G[auraButton:GetName().."Cooldown"];
         if cooldownFrame and cooldownFrame:IsShown() then
@@ -566,10 +587,18 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
         
         if name == "TempEnchant1" or name == "TempEnchant2" or name == "TempEnchant3" then
             if PPBEC_HandleWeaponBuff then
-                if not auraButton.cdInitiated then
+                if not auraButton.cdInitiated and timeLeft and timeLeft > 0 then
                     local startTime = (GetTime()-WeaponEnchantDuration+timeLeft);
                     CooldownFrame_SetTimer(cooldownFrame, startTime, WeaponEnchantDuration, 1);
                     auraButton.cdInitiated = true;
+                else
+                    CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+                    auraButton.cdInitiated = false;
+                end
+            else
+                if cooldownFrame or auraButton.cdInitiated then
+                    CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+                    auraButton.cdInitiated = false;
                 end
             end
         else
@@ -589,6 +618,7 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
     else
         if cooldownFrame ~= nil and auraButton:IsShown() then
             CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+            auraButton.cdInitiated = false;
         end
     end
     
@@ -601,7 +631,6 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
         cooldownFrame:SetAllPoints(auraButton);
         cooldownFrame:SetReverse(true);
     end;
-    
 end
 
 --------------------------

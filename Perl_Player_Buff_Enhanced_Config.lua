@@ -178,11 +178,10 @@ function ShowPanel(panel)
         'setFunc', function(value) Perl_Player_Buff_Set_DisplayCurableDebuff(value); end);
     myCheckBoxDisplayCurableDebuff:SetPoint("TOPLEFT", myCheckBoxDisplayCastableBuffs, "BOTTOMLEFT", 0, -10);
     --]]
-    
 end
 
-PPBECConfigPanel = LibStub("LibSimpleOptions-1.0").AddOptionsPanel("Perl Player Buff Enhanced", ShowPanel);
+PPBECConfigPanel = LibStub("LibSimpleOptions-1.0").AddOptionsPanel(addonName, ShowPanel);
 
 function PPBECConfigPanel:Print(...)
-    DEFAULT_CHAT_FRAME:AddMessage(string.join(" ", "|cFF33FF99Perl Player Buff Enhanced|r:", ...));
+    DEFAULT_CHAT_FRAME:AddMessage(string.join(" ", "|cFF33FF99Perl Player Buff|r:", ...));
 end
