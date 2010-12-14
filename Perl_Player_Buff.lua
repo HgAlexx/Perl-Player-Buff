@@ -39,10 +39,13 @@ Perl_Player_Buff_Config = {};
 PPB_Enhanced_Config = {};
 
 -- global wraper
-local _G = _G;
+-- local _G = _G;
 
 
 local Perl_Player_Buff_DebugMode = false;
+--@do-not-package@
+--Perl_Player_Buff_DebugMode = true;
+--@end-do-not-package@
 
 -- Hook Perl Config Function
 local Original_Perl_Player_Set_Hide_Class_Level_Frame = nil;
@@ -75,7 +78,7 @@ local PPBEC_yOffset = 0;
 local PPBEC_VerticalSpacing = 15;   -- default vertical spacing
 
 -- Default Local Variables
-local Initialized = nil;    -- waiting to be initialized
+local Initialized = 0;    -- waiting to be initialized
 
 local PPBEC_UpdateInterval = 0.1;
 local PPBEC_CancelBuffStartTime = 0;
@@ -86,6 +89,7 @@ local SpecialBar = nil;
 local WeaponEnchantDuration = 60*60;
 
 local Perl_Player_Buff_Script_Frame = nil;
+local Perl_Player_Buff_DelayedInit = 0;
 
 ----------------------
 -- Loading Function --
@@ -99,7 +103,7 @@ function Perl_Player_Buff_OnLoad(self, ...)
     -- Scripts
     self.TimeSinceLastUpdate = 0;
     self:SetScript("OnEvent", Perl_Player_Buff_OnEvent);
-    -- self:SetScript("OnUpdate", Perl_Player_Buff_UpdateAll);
+    self:SetScript("OnUpdate", Perl_Player_Buff_OnUpdate);
 end
 
 ---------------------------
@@ -115,30 +119,50 @@ function Perl_Player_Buff_OnEvent(self, event, ...)
         end
     end
 end
+function Perl_Player_Buff_OnUpdate(self, ...)
+    if Perl_Player_Buff_DelayedInit ~= 0 then
+        if (Perl_Player_Buff_DelayedInit + 2) < GetTime() then
+            if Perl_Player_Buff_DebugMode then
+                DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff OnUpdate: Initialized=" .. Initialized);
+            end
+            Perl_Player_Buff_Script_Frame:SetScript("OnUpdate", nil);
+            Perl_Player_Buff_Align(true);   -- delayed update of anchors
+            Perl_Player_Buff_Align();
+        end
+    end
+end
 
 function Perl_Player_Buff_Events:PLAYER_LOGIN()
+    if Perl_Player_Buff_DebugMode then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff PLAYER_LOGIN: Initialized=" .. Initialized);
+    end
     Perl_Player_Buff_Initialize();
-    Perl_Player_Buff_Script_Frame:UnRegisterEvent("PLAYER_LOGIN");
+    Perl_Player_Buff_Script_Frame:UnregisterEvent("PLAYER_LOGIN");
 end
 function Perl_Player_Buff_Events:PLAYER_ENTERING_WORLD()
+    if Perl_Player_Buff_DebugMode then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff PLAYER_ENTERING_WORLD: Initialized=" .. Initialized);
+    end
     Perl_Player_Buff_Initialize();
 end
-
 function Perl_Player_Buff_Events:PLAYER_TOTEM_UPDATE()
-    Perl_Player_Buff_Align(true);
+    Perl_Player_Buff_Align(true); -- recompute FixAnchor location related to totem bar
 end
 
 -------------------------------
 -- Loading Settings Function --
 -------------------------------
 function Perl_Player_Buff_Initialize()
+    if Perl_Player_Buff_DebugMode then
+        DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff Perl_Player_Buff_Initialize: Initialized=" .. Initialized);
+    end
+    
     -- Code to be run after zoning or logging in goes here
-    if (Initialized) then
-        
+    if (Initialized == 1) then
         Perl_Player_Buff_Set_Scale();
         Perl_Player_Buff_Align(true);
         Perl_Player_Buff_Align();
-        return;
+        return nil;
     end
 
     -- everything below is called only one time (first load)
@@ -158,12 +182,7 @@ function Perl_Player_Buff_Initialize()
     else
         Perl_Player_Buff_UpdateVars_Enhanced();
     end
-
-    -- Major config options.
-    Perl_Player_BuffFrame:SetBackdropColor(0, 0, 0, 1);
-    Perl_Player_BuffFrame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
-    Perl_Player_UseBuffs(showbuffs);
-
+    
     -- hack Perl Config function, so we can update buff location
     Original_Perl_Player_XPBar_Display = Perl_Player_XPBar_Display;
     Perl_Player_XPBar_Display = Enhanced_Perl_Player_XPBar_Display;
@@ -184,7 +203,7 @@ function Perl_Player_Buff_Initialize()
         Original_Perl_Player_Set_Show_Totem_Timers = Perl_Player_Set_Show_Totem_Timers;
         Perl_Player_Set_Show_Totem_Timers = Enhanced_Perl_Player_Set_Show_Totem_Timers;
         SpecialBar = TotemFrame;
-        -- WeaponEnchantDuration = 60*30;             -- Shaman has 30min WeaponEnchant, and what is the player use a oil ?
+        -- WeaponEnchantDuration = 60*30;             -- Shaman has 30min WeaponEnchant, and what is the player use a oil ? hmm ?
         local Perl_Player_Vars = Perl_Player_GetVars();
         if Perl_Player_Buff_Script_Frame and Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
             Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide
@@ -197,11 +216,18 @@ function Perl_Player_Buff_Initialize()
         SpecialBar = nil;
     end;
     
-    hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", Perl_Player_Buff_Align );                           -- handle buff anchor
-    hooksecurefunc("DebuffButton_UpdateAnchors", Perl_Player_Buff_DebuffButton_UpdateAnchors );          -- handle debuff anchor
-    hooksecurefunc("AuraButton_UpdateDuration", Perl_Player_Buff_AuraButton_UpdateDuration );            -- handle buff, debuff and temp enchant
+    -- Major config options.
+    Perl_Player_BuffFrame:SetBackdropColor(0, 0, 0, 1);
+    Perl_Player_BuffFrame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
+    Perl_Player_UseBuffs(showbuffs);
+    
+    hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", Perl_Player_Buff_Align);                           -- handle buff anchor
+    hooksecurefunc("DebuffButton_UpdateAnchors", Perl_Player_Buff_DebuffButton_UpdateAnchors);          -- handle debuff anchor
+    hooksecurefunc("AuraButton_UpdateDuration", Perl_Player_Buff_AuraButton_UpdateDuration );           -- handle buff, debuff and temp enchant
     
     Initialized = 1;
+    
+    Perl_Player_Buff_DelayedInit = GetTime();
 end
 
 
@@ -218,17 +244,17 @@ function Perl_Player_GetStringTime(timenum)
         seconds = 0
     end
     
-    if (hours>0 and hours < 10) then
+    if (hours>0 and hours < 10) and days > 0 then
         shours = "0"..hours;
     else
         shours = ""..hours;
     end
-    if (minutes>0 and minutes < 10) then
+    if (minutes>0 and minutes < 10) and (hours > 0 or days > 0) then
         sminutes = "0"..minutes;
     else
         sminutes = ""..minutes;
     end
-    if (seconds < 10) then
+    if (seconds < 10) and (minutes > 0 or hours > 0 or days > 0) then
         sseconds = "0"..seconds;
     else
         sseconds = ""..seconds;
@@ -298,16 +324,20 @@ function Perl_Player_EnableWeaponHandle()
 end
 
 function Perl_Player_UseBuffs(useperlbuffs)
-    
     if (useperlbuffs == 1) then
+        SetCVar("buffDurations", 0); -- be sure this is off -> save cpu
         if PPBEC_HandleWeaponBuff == true then
-            --
+            -- 
         else
             Perl_Player_DisableWeaponHandle();
         end
-        Perl_Player_Buff_Align(true);   -- update anchor location
-        Perl_Player_Buff_Align();  -- update buffs locations
+        if Initialized then -- if called from config panel, refresh alignement and scale
+            Perl_Player_Buff_Set_Scale();
+            Perl_Player_Buff_Align(true);   -- update anchor location
+            Perl_Player_Buff_Align();  -- update buffs locations
+        end
     else
+        SetCVar("buffDurations", 1); -- set on back, well, we don't really know the previous state :p
         Perl_Player_DisableWeaponHandle();
         securecall(BuffFrame_UpdateAllBuffAnchors);
     end;
@@ -404,8 +434,12 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
         for buffButtonIndex=1, 3 do
             buff = _G["TempEnchant"..buffButtonIndex];
             if buff then
-                buff.cdInitiated = false;
+                
                 if buff:IsShown() then
+                    buff.cdInitiated = false;
+                    if Perl_Player_Buff_DebugMode then
+                        DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateAllBuffAnchors: " .. buff:GetName() .. " cdInitiated to false");
+                    end
                     enchantCount = enchantCount + 1;
                     -- move to location
                     if ( buff.parent ~= Perl_Player_BuffFrame ) then
@@ -469,6 +503,9 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
         if cooldownFrame then
             CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
             buff.cdInitiated = false;
+            if Perl_Player_Buff_DebugMode then
+                DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateAllBuffAnchors: " .. buff:GetName() .. " cdInitiated to false");
+            end
         end;
     end -- for
     
@@ -478,7 +515,8 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
     --end
 end
 
-local TopLeftAnchorDeBuff  = nil; -- the first frame of current line, needed to anchor the first of the next line
+local TopLeftAnchorDeBuff = nil; -- the first frame of current line, needed to anchor the first of the next line
+local CurrentAnchorDeBuff = nil;
 function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
     if Perl_Player_Buff_DebugMode then
         DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff Perl: Perl_Player_Buff_DebuffButton_UpdateAnchors called: " .. index);
@@ -490,6 +528,14 @@ function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
     
     local buff = _G[buttonName..index];
     buff:ClearAllPoints();
+    if not buff.visualInitiated then
+        local border = _G[buff:GetName().."Border"];
+        border:SetWidth(buff:GetWidth());
+        border:SetHeight(buff:GetHeight());
+        --buff:SetWidth(buff:GetWidth()-1);
+        --buff:SetHeight(buff:GetHeight()-1);
+        buff.visualInitiated = true;
+    end
     
     if ( index == 1 ) then
         -- anchor to the first Buff on last row
@@ -500,7 +546,7 @@ function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
         end
     elseif ((index-1)%PPBEC_BuffPerLine) == 0 then
         -- new line, Set Current to topleft
-        local CurrentAnchorDeBuff = TopLeftAnchorDeBuff;
+        CurrentAnchorDeBuff = TopLeftAnchorDeBuff;
         
         -- and Set next Topleft to current one
         TopLeftAnchorDeBuff = buff;
@@ -545,12 +591,6 @@ end
 
 local UpdateDurationLastTime = 0;
 function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
-    local t = GetTime();
-    if (t - PPBEC_UpdateInterval < UpdateDurationLastTime) then
-        return nil;
-    end
-    UpdateDurationLastTime = GetTime();
-    
     if showbuffs ~= 1 then
         local cooldownFrame = _G[auraButton:GetName().."Cooldown"];
         if cooldownFrame and cooldownFrame:IsShown() then
@@ -587,18 +627,29 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
         
         if name == "TempEnchant1" or name == "TempEnchant2" or name == "TempEnchant3" then
             if PPBEC_HandleWeaponBuff then
-                if not auraButton.cdInitiated and timeLeft and timeLeft > 0 then
-                    local startTime = (GetTime()-WeaponEnchantDuration+timeLeft);
-                    CooldownFrame_SetTimer(cooldownFrame, startTime, WeaponEnchantDuration, 1);
-                    auraButton.cdInitiated = true;
+                if timeLeft and timeLeft > 0 then
+                    if not auraButton.cdInitiated then
+                        local startTime = (GetTime()-WeaponEnchantDuration+timeLeft);
+                        CooldownFrame_SetTimer(cooldownFrame, startTime, WeaponEnchantDuration, 1);
+                        auraButton.cdInitiated = true;
+                        if Perl_Player_Buff_DebugMode then
+                            DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateDuration: " .. auraButton:GetName() .. " cdInitiated to true");
+                        end
+                    end
                 else
                     CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
                     auraButton.cdInitiated = false;
+                    if Perl_Player_Buff_DebugMode then
+                        DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateDuration: " .. auraButton:GetName() .. " cdInitiated to false");
+                    end
                 end
             else
                 if cooldownFrame or auraButton.cdInitiated then
                     CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
                     auraButton.cdInitiated = false;
+                    if Perl_Player_Buff_DebugMode then
+                        DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateDuration: " .. auraButton:GetName() .. " cdInitiated to false");
+                    end
                 end
             end
         else
@@ -694,24 +745,6 @@ end
 local lastHS, lastVS = 10, 15;
 function Perl_Player_Buff_Set_ShowOriginalTextTimer(newvalue)
     PPBEC_ShowOriginalTextTimer = newvalue;
-    
-    --[[
-    if PPBEC_ShowOriginalTextTimer == false then
-        lastVS = PPBEC_VerticalSpacing;
-        lastHS = horizontalspacing;
-        PPBEC_VerticalSpacing = 1;
-        horizontalspacing = 1;
-    else
-        if horizontalspacing == 1 then
-            horizontalspacing = lastHS;
-            end
-        if PPBEC_VerticalSpacing == 1 then
-            PPBEC_VerticalSpacing = lastVS;
-        end
-    end
-    Perl_Player_Buff_UpdateVars();
-    --]]
-    
     Perl_Player_Buff_UpdateVars_Enhanced();
     -- Perl_Player_Buff_Align();
 end
