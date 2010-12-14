@@ -1,4 +1,3 @@
---local addonName, PPBEC_Localization = ...;
 PPBEC_Localization = {};
 
 function PPBEC_LocalizationIndexFunction(t, key)
@@ -6,7 +5,7 @@ function PPBEC_LocalizationIndexFunction(t, key)
 end
 setmetatable(PPBEC_Localization, {__index=PPBEC_LocalizationIndexFunction});
 
---@debug@
+--@do-not-package@
 PPBEC_Localization["FT_Version"] = "Version: %s"
 PPBEC_Localization["PPBEC/ConfigPanel/BuffPerLine/Desc"] = "How many buff do you want per line ?"
 PPBEC_Localization["PPBEC/ConfigPanel/BuffPerLine/Name"] = "Buff per line"
@@ -27,6 +26,6 @@ PPBEC_Localization["PPBEC/ConfigPanel/YOffset/Desc"] = "Y Offset from the parent
 PPBEC_Localization["PPBEC/ConfigPanel/YOffset/Name"] = "Y Offset"
 PPBEC_Localization["PPBEC/ToolTip/LeftButtonDesc"] = "|cFFFFFFFF <Left Click>|r Open Perl Classic Unit Frames options menu|r"
 PPBEC_Localization["PPBEC/ToolTip/RightButtonDesc"] = "|cFFFFFFFF <Right Click>|r Open Perl Player Buff Enhanced options menu|r"
---@end-debug@
+--@end-do-not-package@
 
 --@localization(locale="enUS", format="lua_additive_table", handle-unlocalized="english", table-name="PPBEC_Localization")@
