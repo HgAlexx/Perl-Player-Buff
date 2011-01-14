@@ -1,7 +1,7 @@
 PPBEC_Localization = {};
 
 function PPBEC_LocalizationIndexFunction(t, key)
-    return "[no translation for " .. (key or "") .. "]";
+    return "[no translation for " .. (key or "unknown") .. "]";
 end
 setmetatable(PPBEC_Localization, {__index=PPBEC_LocalizationIndexFunction});
 
