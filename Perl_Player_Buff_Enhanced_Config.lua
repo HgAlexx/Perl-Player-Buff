@@ -14,7 +14,7 @@ local addonName, _ = ...;
 addonName = string.replace(addonName, "_", " ");
 
 
-PPBECConfigPanel = nil;
+PPBECConfigPanelMain = nil;
 
 local FirstOpened = 0;
 local panelWidth = 0;
@@ -27,12 +27,12 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
     OnClick = function(clickedframe, button)
         if button == 'RightButton' then
             if FirstOpened == 0 then
-                InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanel);
+                InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
                 FirstOpened = 1;
             else
-                if PPBECConfigPanel:IsVisible() ~= 1 then
-                    PPBECConfigPanel:refresh();
-                    InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanel);
+                if PPBECConfigPanelMain:IsVisible() ~= 1 then
+                    PPBECConfigPanelMain:refresh();
+                    InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
                 else
                     ToggleGameMenu();
                 end
@@ -48,7 +48,7 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
     end,
     OnTooltipShow = function(tooltip)
             if not tooltip or not tooltip.AddLine then return end
-            tooltip:AddLine('Perl Player Buff Enhanced Config')
+            tooltip:AddLine(addonName)
             tooltip:AddLine(PPBEC_Localization["PPBEC/ToolTip/LeftButtonDesc"])
             tooltip:AddLine(PPBEC_Localization["PPBEC/ToolTip/RightButtonDesc"])
             tooltip:AddLine('')
@@ -57,32 +57,41 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
 })
 -- PPBEC_Localization[]
 function getCurrentValue(key)
-    local vartable = Perl_Player_Buff_GetVars_Enhanced();
-    return vartable[key];
+   local vartable = Perl_Player_Buff_GetVars_Enhanced();
+   return vartable[key];
 end
 
-function ShowPanel(panel)
-    panelWidth = 250;
-    if panelWidth < 200 then panelWidth = 250 end
-    
+function getCurrentValueOriginal(key)
+   local vartable = Perl_Player_Buff_GetVars();
+   return vartable[key];
+end
+
+function ShowPanelMain(panel)
     local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanel/TitleDesc"]);
-    myTitle:SetWidth(panelWidth);
     myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
-    local mySliderBuffPerLine = panel:MakeSlider(
-        'name', PPBEC_Localization["PPBEC/ConfigPanel/BuffPerLine/Name"],
-        'description', PPBEC_Localization["PPBEC/ConfigPanel/BuffPerLine/Desc"],
-        'minText', '1',
-        'maxText', '40',
-        'minValue', 1,
-        'maxValue', 40,
-        'step', 1,
-        'default', 10,
-        'current', getCurrentValue("BuffPerLine"),
-        'setFunc', function(value) Perl_Player_Buff_Set_BuffPerLine(value); end,
-        'currentTextFunc', function(value) return value end);
-    mySliderBuffPerLine:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
-    mySliderBuffPerLine:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
+
+    local myCheckBoxShowBuffs = panel:MakeToggle(
+        'name', PPBEC_Localization["PPBEC/ConfigPanel/ShowBuffs/Name"],
+        'description', PPBEC_Localization["PPBEC/ConfigPanel/ShowBuffs/Desc"],
+        'default', true,
+        'getFunc', function() return (getCurrentValueOriginal("showbuffs")==1) end,
+        'setFunc', function(value) Perl_Player_Buff_Set_ShowBuffs(value);  end);
+    myCheckBoxShowBuffs:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
+
+    local myCheckBoxHandleWeaponBuff = panel:MakeToggle(
+        'name', PPBEC_Localization["PPBEC/ConfigPanel/HandleWeaponBuff/Name"],
+        'description', PPBEC_Localization["PPBEC/ConfigPanel/HandleWeaponBuff/Desc"],
+        'default', false,
+        'getFunc', function() return getCurrentValue("HandleWeaponBuff") end,
+        'setFunc', function(value) Perl_Player_Buff_Set_HandleWeaponBuff(value); end);
+    myCheckBoxHandleWeaponBuff:SetPoint("TOPLEFT", myCheckBoxShowBuffs, "BOTTOMLEFT", 0, -10);
+
+end
+
+function ShowPanelPosition(panel)
+    local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelPosition/TitleDesc"]);
+    myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
     local mySliderXOffset = panel:MakeSlider(
         'name', PPBEC_Localization["PPBEC/ConfigPanel/XOffset/Name"],
@@ -96,7 +105,7 @@ function ShowPanel(panel)
         'current', getCurrentValue("XOffset"),
         'setFunc', function(value) Perl_Player_Buff_Set_XOffset(value); end,
         'currentTextFunc', function(value) return value end);
-    mySliderXOffset:SetPoint("TOPLEFT", mySliderBuffPerLine, "BOTTOMLEFT", 0, -40);
+    mySliderXOffset:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
     mySliderXOffset:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
     
     local mySliderYOffset = panel:MakeSlider(
@@ -114,6 +123,42 @@ function ShowPanel(panel)
     mySliderYOffset:SetPoint("TOPLEFT", mySliderXOffset, "BOTTOMLEFT", 0, -40);
     mySliderYOffset:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
     
+end
+
+function ShowPanelStyle(panel)
+    local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelStyle/TitleDesc"]);
+    myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
+    
+    local mySliderScale = panel:MakeSlider(
+        'name', PPBEC_Localization["PPBEC/ConfigPanel/Scale/Name"],
+        'description', PPBEC_Localization["PPBEC/ConfigPanel/Scale/Desc"],
+        'minText', '1',
+        'maxText', '150',
+        'minValue', 1,
+        'maxValue', 150,
+        'step', 1,
+        'default', 100,
+        'current', getCurrentValueOriginal("scale")*100,
+        'setFunc', function(value) Perl_Player_Buff_Set_Scale(value); end,
+        'currentTextFunc', function(value) return value end);
+    mySliderScale:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
+    mySliderScale:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
+    
+    local mySliderBuffPerLine = panel:MakeSlider(
+        'name', PPBEC_Localization["PPBEC/ConfigPanel/BuffPerLine/Name"],
+        'description', PPBEC_Localization["PPBEC/ConfigPanel/BuffPerLine/Desc"],
+        'minText', '1',
+        'maxText', '40',
+        'minValue', 1,
+        'maxValue', 40,
+        'step', 1,
+        'default', 10,
+        'current', getCurrentValue("BuffPerLine"),
+        'setFunc', function(value) Perl_Player_Buff_Set_BuffPerLine(value); end,
+        'currentTextFunc', function(value) return value end);
+    mySliderBuffPerLine:SetPoint("TOPLEFT", mySliderScale, "BOTTOMLEFT", 0, -40);
+    mySliderBuffPerLine:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
+    
     local mySliderVerticalSpacing = panel:MakeSlider(
         'name', PPBEC_Localization["PPBEC/ConfigPanel/VerticalSpacing/Name"],
         'description', PPBEC_Localization["PPBEC/ConfigPanel/VerticalSpacing/Desc"],
@@ -126,7 +171,7 @@ function ShowPanel(panel)
         'current', getCurrentValue("VerticalSpacing"),
         'setFunc', function(value) Perl_Player_Buff_Set_Vertical_Spacing(value); end,
         'currentTextFunc', function(value) return value end);
-    mySliderVerticalSpacing:SetPoint("TOPLEFT", mySliderYOffset, "BOTTOMLEFT", 0, -40);
+    mySliderVerticalSpacing:SetPoint("TOPLEFT", mySliderBuffPerLine, "BOTTOMLEFT", 0, -40);
     mySliderVerticalSpacing:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
     
     local myCheckBoxShowNativeCoolDown = panel:MakeToggle(
@@ -135,7 +180,7 @@ function ShowPanel(panel)
         'default', false,
         'getFunc', function() return getCurrentValue("ShowNativeCoolDown") end,
         'setFunc', function(value) Perl_Player_Buff_Set_ShowNativeCoolDown(value) end);
-    myCheckBoxShowNativeCoolDown:SetPoint("TOPLEFT", mySliderVerticalSpacing, "BOTTOMLEFT", 0, -5);
+    myCheckBoxShowNativeCoolDown:SetPoint("TOPLEFT", mySliderVerticalSpacing, "BOTTOMLEFT", 0, -40);
     
     local myCheckBoxShowOriginalTextTimer = panel:MakeToggle(
         'name', PPBEC_Localization["PPBEC/ConfigPanel/ShowOriginalTextTimer/Name"],
@@ -145,43 +190,50 @@ function ShowPanel(panel)
         'setFunc', function(value) Perl_Player_Buff_Set_ShowOriginalTextTimer(value); end);
     myCheckBoxShowOriginalTextTimer:SetPoint("TOPLEFT", myCheckBoxShowNativeCoolDown, "BOTTOMLEFT", 0, -5);
     
-    local myCheckBoxHandleWeaponBuff = panel:MakeToggle(
-        'name', PPBEC_Localization["PPBEC/ConfigPanel/HandleWeaponBuff/Name"],
-        'description', PPBEC_Localization["PPBEC/ConfigPanel/HandleWeaponBuff/Desc"],
-        'default', false,
-        'getFunc', function() return getCurrentValue("HandleWeaponBuff") end,
-        'setFunc', function(value) Perl_Player_Buff_Set_HandleWeaponBuff(value); end);
-    myCheckBoxHandleWeaponBuff:SetPoint("TOPLEFT", myCheckBoxShowOriginalTextTimer, "BOTTOMLEFT", 0, -5);
-    
+    local myCheckBoxShowSecond = panel:MakeToggle(
+        'name', PPBEC_Localization["PPBEC/ConfigPanel/ShowSecond/Name"],
+        'description', PPBEC_Localization["PPBEC/ConfigPanel/ShowSecond/Desc"],
+        'default', true,
+        'getFunc', function() return (getCurrentValueOriginal("hideseconds") == 0) end,
+        'setFunc', function(value) Perl_Player_Buff_Set_Hide_Seconds(not value); end);
+    myCheckBoxShowSecond:SetPoint("TOPLEFT", myCheckBoxShowOriginalTextTimer, "BOTTOMLEFT", 0, -5);
+
     local myCheckBoxShowSecondUnder10m = panel:MakeToggle(
         'name', PPBEC_Localization["PPBEC/ConfigPanel/ShowSecondUnder10m/Name"],
         'description', PPBEC_Localization["PPBEC/ConfigPanel/ShowSecondUnder10m/Desc"],
         'default', false,
         'getFunc', function() return getCurrentValue("ShowSecondUnder10m") end,
         'setFunc', function(value) Perl_Player_Buff_Set_ShowSecondUnder10m(value); end);
-    myCheckBoxShowSecondUnder10m:SetPoint("TOPLEFT", myCheckBoxHandleWeaponBuff, "BOTTOMLEFT", 0, -5);
+    myCheckBoxShowSecondUnder10m:SetPoint("TOPLEFT", myCheckBoxShowSecond, "BOTTOMLEFT", 0, -5);
+
+end
+
+function ShowPanelFilter(panel)
+    local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelFilter/TitleDesc"]);
+    myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
-    --[[
     local myCheckBoxDisplayCastableBuffs = panel:MakeToggle(
-        'name', 'Display Castable Buffs Only',
-        'description', 'Display only buff you can cast.',
+        'name', 'Display Castable Buffs Only NOT WORKING',
+        'description', 'Display only buff you can cast. NOT WORKING',
         'default', false,
         'getFunc', function() return getCurrentValue("DisplayCastableBuffs") end,
         'setFunc', function(value) Perl_Player_Buff_Set_DisplayCastableBuffs(value); end);
-    myCheckBoxDisplayCastableBuffs:SetPoint("TOPLEFT", myCheckBoxHandleWeaponBuff, "BOTTOMLEFT", 0, -10);
+    myCheckBoxDisplayCastableBuffs:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
     
     local myCheckBoxDisplayCurableDebuff = panel:MakeToggle(
-        'name', 'Display Curable Debuff Only',
-        'description', 'Display only debuff you can cure.',
+        'name', 'Display Curable Debuff Only NOT WORKING',
+        'description', 'Display only debuff you can cure. NOT WORKING',
         'default', false,
         'getFunc', function() return getCurrentValue("DisplayCurableDebuff") end,
         'setFunc', function(value) Perl_Player_Buff_Set_DisplayCurableDebuff(value); end);
     myCheckBoxDisplayCurableDebuff:SetPoint("TOPLEFT", myCheckBoxDisplayCastableBuffs, "BOTTOMLEFT", 0, -10);
-    --]]
 end
 
-PPBECConfigPanel = LibStub("LibSimpleOptions-1.0").AddOptionsPanel(addonName, ShowPanel);
+PPBECConfigPanelMain = LibStub("LibSimpleOptions-1.0").AddOptionsPanel(addonName, ShowPanelMain);
+PPBECConfigPanelFilter = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Filter", ShowPanelFilter)
+PPBECConfigPanelPosition = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Position", ShowPanelPosition)
+PPBECConfigPanelStyle = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Style", ShowPanelStyle)
 
-function PPBECConfigPanel:Print(...)
-    DEFAULT_CHAT_FRAME:AddMessage(string.join(" ", "|cFF33FF99Perl Player Buff|r:", ...));
+function PPBECConfigPanelMain:Print(...)
+    DEFAULT_CHAT_FRAME:AddMessage(string.join(" ", "|cFF33FF99" .. addonName .. "|r:", ...));
 end
