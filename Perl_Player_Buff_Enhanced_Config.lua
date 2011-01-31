@@ -230,7 +230,7 @@ function ShowPanelFilter(panel)
 end
 
 PPBECConfigPanelMain = LibStub("LibSimpleOptions-1.0").AddOptionsPanel(addonName, ShowPanelMain);
-PPBECConfigPanelFilter = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Filter", ShowPanelFilter)
+-- PPBECConfigPanelFilter = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Filter", ShowPanelFilter)
 PPBECConfigPanelPosition = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Position", ShowPanelPosition)
 PPBECConfigPanelStyle = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Style", ShowPanelStyle)
 
