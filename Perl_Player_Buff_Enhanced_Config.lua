@@ -26,17 +26,7 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
     icon = 'Interface\\AddOns\\Perl_Config\\Perl_Minimap_Button',
     OnClick = function(clickedframe, button)
         if button == 'RightButton' then
-            if FirstOpened == 0 then
-                InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
-                FirstOpened = 1;
-            else
-                if PPBECConfigPanelMain:IsVisible() ~= 1 then
-                    PPBECConfigPanelMain:refresh();
-                    InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
-                else
-                    ToggleGameMenu();
-                end
-            end
+            Perl_Player_Buff_Enhanced_Config_ToggleOptions();
         elseif button == 'LeftButton' then
             if Perl_Config_Toggle then
                 Perl_Config_Toggle();
@@ -55,18 +45,32 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
             tooltip:AddLine(string.format(PPBEC_Localization["FT_Version"], Perl_Player_Buff_Version))
     end,
 })
--- PPBEC_Localization[]
-function getCurrentValue(key)
+
+function Perl_Player_Buff_Enhanced_Config_ToggleOptions()
+    if FirstOpened == 0 then
+        InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
+        FirstOpened = 1;
+    else
+        if PPBECConfigPanelMain:IsVisible() ~= 1 then
+            PPBECConfigPanelMain:refresh();
+            InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
+        else
+            ToggleGameMenu();
+        end
+    end
+end
+
+local function getCurrentValue(key)
    local vartable = Perl_Player_Buff_GetVars_Enhanced();
    return vartable[key];
 end
 
-function getCurrentValueOriginal(key)
+local function getCurrentValueOriginal(key)
    local vartable = Perl_Player_Buff_GetVars();
    return vartable[key];
 end
 
-function ShowPanelMain(panel)
+local function ShowPanelMain(panel)
     local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanel/TitleDesc"]);
     myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
@@ -89,7 +93,7 @@ function ShowPanelMain(panel)
 
 end
 
-function ShowPanelPosition(panel)
+local function ShowPanelPosition(panel)
     local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelPosition/TitleDesc"]);
     myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
@@ -125,7 +129,7 @@ function ShowPanelPosition(panel)
     
 end
 
-function ShowPanelStyle(panel)
+local function ShowPanelStyle(panel)
     local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelStyle/TitleDesc"]);
     myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
@@ -208,7 +212,7 @@ function ShowPanelStyle(panel)
 
 end
 
-function ShowPanelFilter(panel)
+local function ShowPanelFilter(panel)
     local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelFilter/TitleDesc"]);
     myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
