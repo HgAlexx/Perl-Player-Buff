@@ -74,7 +74,6 @@ local function ShowPanelMain(panel)
     local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanel/TitleDesc"]);
     myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
     
-
     local myCheckBoxShowBuffs = panel:MakeToggle(
         'name', PPBEC_Localization["PPBEC/ConfigPanel/ShowBuffs/Name"],
         'description', PPBEC_Localization["PPBEC/ConfigPanel/ShowBuffs/Desc"],
@@ -143,7 +142,7 @@ local function ShowPanelStyle(panel)
         'step', 1,
         'default', 100,
         'current', getCurrentValueOriginal("scale")*100,
-        'setFunc', function(value) Perl_Player_Buff_Set_Scale(value); end,
+        'setFunc', function(value) Perl_Player_Buff_Set_Scale(value) end,
         'currentTextFunc', function(value) return value end);
     mySliderScale:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
     mySliderScale:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
@@ -158,24 +157,39 @@ local function ShowPanelStyle(panel)
         'step', 1,
         'default', 10,
         'current', getCurrentValue("BuffPerLine"),
-        'setFunc', function(value) Perl_Player_Buff_Set_BuffPerLine(value); end,
+        'setFunc', function(value) Perl_Player_Buff_Set_BuffPerLine(value) end,
         'currentTextFunc', function(value) return value end);
     mySliderBuffPerLine:SetPoint("TOPLEFT", mySliderScale, "BOTTOMLEFT", 0, -40);
     mySliderBuffPerLine:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
     
+    local mySliderHorizontalSpacing = panel:MakeSlider(
+        'name', PPBEC_Localization["PPBEC/ConfigPanel/HorizontalSpacing/Name"],
+        'description', PPBEC_Localization["PPBEC/ConfigPanel/HorizontalSpacing/Desc"],
+        'minText', '-100',
+        'maxText', '100',
+        'minValue', -100,
+        'maxValue', 100,
+        'step', 1,
+        'default', 10,
+        'current', getCurrentValueOriginal("horizontalspacing"),
+        'setFunc', function(value) Perl_Player_Buff_Set_Horizontal_Spacing(value) end,
+        'currentTextFunc', function(value) return value end);
+    mySliderHorizontalSpacing:SetPoint("TOPLEFT", mySliderBuffPerLine, "BOTTOMLEFT", 0, -40);
+    mySliderHorizontalSpacing:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
+    
     local mySliderVerticalSpacing = panel:MakeSlider(
         'name', PPBEC_Localization["PPBEC/ConfigPanel/VerticalSpacing/Name"],
         'description', PPBEC_Localization["PPBEC/ConfigPanel/VerticalSpacing/Desc"],
-        'minText', '0',
+        'minText', '-100',
         'maxText', '100',
-        'minValue', 0,
+        'minValue', -100,
         'maxValue', 100,
         'step', 1,
         'default', 15,
         'current', getCurrentValue("VerticalSpacing"),
         'setFunc', function(value) Perl_Player_Buff_Set_Vertical_Spacing(value); end,
         'currentTextFunc', function(value) return value end);
-    mySliderVerticalSpacing:SetPoint("TOPLEFT", mySliderBuffPerLine, "BOTTOMLEFT", 0, -40);
+    mySliderVerticalSpacing:SetPoint("TOPLEFT", mySliderHorizontalSpacing, "BOTTOMLEFT", 0, -40);
     mySliderVerticalSpacing:SetPoint("RIGHT", panel, "RIGHT", -10, 0);
     
     local myCheckBoxShowNativeCoolDown = panel:MakeToggle(
