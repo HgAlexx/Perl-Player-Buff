@@ -1,3 +1,8 @@
+4.0.3a_2011.02.01_r24 - February 1, 2011 by Leliel
+* Fix missing translation
+* Fix missing sliders into style option frame :)
+
+
 4.0.3a_2011.02.01_r20 - February 1, 2011 by Leliel
 * Update translations
 * Split configuration from Perl Classic
