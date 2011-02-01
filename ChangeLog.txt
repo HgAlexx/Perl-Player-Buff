@@ -1,4 +1,4 @@
-4.0.3a_2011.02.01_r1 - February 1, 2011 by Leliel
+4.0.3a_2011.02.01_r20 - February 1, 2011 by Leliel
 * Update translations
 * Split configuration from Perl Classic
 * Many bugs fixes
