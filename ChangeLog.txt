@@ -1,3 +1,15 @@
+4.0.3a_2011.02.01_r1 - February 1, 2011 by Leliel
+* Update translations
+* Split configuration from Perl Classic
+* Many bugs fixes
+* externalization of some libs
+* Some work around cooldown behavior
+* Workaround a bug which cause buff to not properly located after login and before any aura changes.
+* Some cpu saving
+* Adjust the size of the debuff border
+* Some cleaning
+
+
 4.0.3a_2010.12.11_r13 - December 13, 2010 by Leliel
 * TOC Update
 
