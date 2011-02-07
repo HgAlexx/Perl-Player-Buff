@@ -91,6 +91,9 @@ local WeaponEnchantDuration = 60*60;
 local Perl_Player_Buff_Script_Frame = nil;
 local Perl_Player_Buff_DelayedInit = 0;
 
+-- Button Facade support
+local LibBF = LibStub('LibButtonFacade', true)
+
 ----------------------
 -- Loading Function --
 ----------------------
@@ -128,6 +131,11 @@ function Perl_Player_Buff_OnUpdate(self, ...)
          Perl_Player_Buff_Script_Frame:SetScript("OnUpdate", nil);
          Perl_Player_Buff_Align(true);   -- delayed update of anchors
          Perl_Player_Buff_Align();
+         
+         -- MOTV (Message of the Version)
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Now support ButtonFacade skining!");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Not in your language ? Add it ! Visit our page on curse.com");
       end
    end
 end
@@ -159,6 +167,10 @@ function Perl_Player_Buff_Initialize()
    
    -- Code to be run after zoning or logging in goes here
    if (Initialized == 1) then
+      if LibBF then
+         LibBF:Group("Perl Player Buff", "Buffs"):Skin(unpack(Perl_Player_Buff_GetButtonFacadeStyle("Buffs")))
+         LibBF:Group("Perl Player Buff", "Debuffs"):Skin(unpack(Perl_Player_Buff_GetButtonFacadeStyle("Debuffs")))
+      end
       Perl_Player_Buff_Set_Scale();
       Perl_Player_Buff_Align(true);
       Perl_Player_Buff_Align();
@@ -229,9 +241,25 @@ function Perl_Player_Buff_Initialize()
    
    Initialized = 1;
    
+   -- button facade support	
+   if LibBF then
+      LibBF:RegisterSkinCallback("Perl Player Buff", Perl_Player_Buff_ButtonFacade_OnSkin, Perl_Player_Buff_Script_Frame)
+      LibBF:Group("Perl Player Buff", "Buffs"):Skin(unpack(Perl_Player_Buff_GetButtonFacadeStyle("Buffs")))
+      LibBF:Group("Perl Player Buff", "Debuffs"):Skin(unpack(Perl_Player_Buff_GetButtonFacadeStyle("Debuffs")))
+   end
+   
    Perl_Player_Buff_DelayedInit = GetTime();
 end
 
+function Perl_Player_Buff_ButtonFacade_OnSkin(_, SkinID, Gloss, Backdrop, Group, Button, Colors)
+	local style = Perl_Player_Buff_GetButtonFacadeStyle(Group);
+	if style then
+		style[1] = SkinID
+		style[2] = Gloss
+		style[3] = Backdrop
+		style[4] = Colors
+	end
+end
 
 --------------------
 -- Buff Functions --
@@ -480,13 +508,16 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
                   TopLeftAnchorBuff = buff;
                   
                   -- Set Next Button Anchor and Position, always on CurrentAnchorBuff
-                  buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "BOTTOMLEFT", 0, -PPBEC_VerticalSpacing); -- TODO orientation: do not negate verticalSpacing if going UP
+                  buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "BOTTOMLEFT", 0, -PPBEC_VerticalSpacing);
                else
                   -- Set Next Button Anchor and Position, always on CurrentAnchorBuff
                   buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "TOPRIGHT", horizontalspacing, 0);
                end
                -- Set current for next :)
                CurrentAnchorBuff = buff;
+            end
+            if LibBF then
+                LibBF:Group('Perl Player Buff', 'Buffs'):AddButton(buff);
             end
          end;
       end -- for
@@ -502,7 +533,7 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
       if ( buffButtonIndex == 1 ) then
          buff:SetPoint("TOPLEFT", Perl_Player_BuffFrame, "TOPLEFT", 0, 0);
          TopLeftAnchorBuff = buff;
-         elseif ((buffButtonIndex-1)%PPBEC_BuffPerLine) == 0 then
+      elseif ((buffButtonIndex-1)%PPBEC_BuffPerLine) == 0 then
          -- new line, Set Current to topleft
          CurrentAnchorBuff = TopLeftAnchorBuff;
          
@@ -510,7 +541,7 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
          TopLeftAnchorBuff = buff;
          
          -- Set Next Button Anchor and Position, always on CurrentAnchorBuff
-         buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "BOTTOMLEFT", 0, -PPBEC_VerticalSpacing); -- TODO orientation: do not negate verticalSpacing if going UP
+         buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "BOTTOMLEFT", 0, -PPBEC_VerticalSpacing);
       else
          -- Set Next Button Anchor and Position, always on CurrentAnchorBuff
          buff:SetPoint("TOPLEFT", CurrentAnchorBuff, "TOPRIGHT", horizontalspacing, 0);
@@ -527,6 +558,9 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
             DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateAllBuffAnchors: " .. buff:GetName() .. " cdInitiated to false");
          end
       end;
+      if LibBF then
+         LibBF:Group('Perl Player Buff', 'Buffs'):AddButton(buff);
+      end
    end -- for
 end
 
@@ -547,7 +581,7 @@ function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
       buff.parent = Perl_Player_BuffFrame;
    end;
    buff:ClearAllPoints();
-   if not buff.ButtonStyleIsSetup or buff.ButtonStyleIsSetup == false then
+   if not LibBF and (not buff.ButtonStyleIsSetup or buff.ButtonStyleIsSetup == false) then
       local border = _G[buttonName..index.."Border"];
       if border then
         border:SetWidth(buff:GetWidth());
@@ -580,7 +614,9 @@ function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
       buff:ClearAllPoints();
       buff:SetPoint("TOPLEFT", _G[buttonName..(index-1)], "TOPRIGHT", horizontalspacing, 0);
    end
-   
+   if LibBF then
+      LibBF:Group('Perl Player Buff', 'Debuffs'):AddButton(buff);
+   end
    -- border color is handled by blizzard code
    -- nothing to do
    
@@ -990,6 +1026,7 @@ function Perl_Player_Buff_UpdateVars(vartable)
    };
 end
 
+
 -- Enhanced Config Functions duplicate
 function Perl_Player_Buff_GetVars_Enhanced(name, updateflag)
    if (name == nil) then
@@ -1163,4 +1200,15 @@ function Perl_Player_Buff_UpdateVars_Enhanced(vartable)
       ["YOffset"] = PPBEC_yOffset,
       ["VerticalSpacing"] = PPBEC_VerticalSpacing,
    };
+end
+
+function Perl_Player_Buff_GetButtonFacadeStyle(group)
+   if group == "Buffs" then
+      PPB_Enhanced_Config[playerName]["buffStyle"] = PPB_Enhanced_Config[playerName]["buffStyle"] or {};
+      return PPB_Enhanced_Config[playerName]["buffStyle"];
+   elseif group == "Debuffs" then
+      PPB_Enhanced_Config[playerName]["debuffStyle"] = PPB_Enhanced_Config[playerName]["debuffStyle"] or {};
+      return PPB_Enhanced_Config[playerName]["debuffStyle"];
+   end
+   return {};
 end
