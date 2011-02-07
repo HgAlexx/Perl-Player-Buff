@@ -5,6 +5,7 @@
 ## Version: @project-version@
 ## Dependencies: Perl_Config, Perl_Player
 ## SavedVariables: Perl_Player_Buff_Config, PPB_Enhanced_Config
+## OptionalDeps: ButtonFacade
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml

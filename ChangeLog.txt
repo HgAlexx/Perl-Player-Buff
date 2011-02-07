@@ -1,3 +1,7 @@
+4.0.3a_2011.02.07_r26 - February 1, 2011 by Leliel
++ Add support of ButtonFacade !
+
+
 4.0.3a_2011.02.01_r24 - February 1, 2011 by Leliel
 * Fix missing translation
 * Fix missing sliders into style option frame :)
