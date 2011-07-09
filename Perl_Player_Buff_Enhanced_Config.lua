@@ -11,7 +11,7 @@ Perl Player Buff Enhanced Config :
 
 --]]
 local addonName, _ = ...;
-addonName = string.replace(addonName, "_", " ");
+addonName = string.gsub(addonName, "_", " ");
 
 
 PPBECConfigPanelMain = nil;
