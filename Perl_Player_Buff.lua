@@ -19,10 +19,8 @@ List of new features (all toggleable):
 - Adjustable vertical spacing
 - Adjustable x offset
 - Adjustable y offset
-
-Planned features:
-- Adjustable vertical orientation
-- Adjustable horizontale orientation
+- Adjustable horizontale orientation (with negative x offset ^^)
+- Adjustable vertical orientation (with negative y offset ^^)
 
 --]]
 

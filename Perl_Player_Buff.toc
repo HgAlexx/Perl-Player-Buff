@@ -1,4 +1,4 @@
-## Interface: 40000
+## Interface: 40200
 ## Title: Perl Player Buff, fan updated by Leliel
 ## Notes: Displays buffs below the Player Frame
 ## Author: microAlexx AKA Leliel, Yui, Nerv, Neon at EU-Ysondre
