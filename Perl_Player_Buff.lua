@@ -213,7 +213,7 @@ function Perl_Player_Buff_Initialize()
       Original_Perl_Player_Set_Show_Totem_Timers = Perl_Player_Set_Show_Totem_Timers;
       Perl_Player_Set_Show_Totem_Timers = Enhanced_Perl_Player_Set_Show_Totem_Timers;
       SpecialBar = TotemFrame;
-      -- WeaponEnchantDuration = 60*30; -- Shaman has 30min WeaponEnchant, and what is the player use a oil ? hmm ?
+      -- WeaponEnchantDuration = 60*30; -- Shaman has 30min WeaponEnchant, and what if the player use a oil ? hmm ?
       local Perl_Player_Vars = Perl_Player_GetVars();
       if Perl_Player_Buff_Script_Frame and Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
          Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide

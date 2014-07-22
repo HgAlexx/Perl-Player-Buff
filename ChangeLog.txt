@@ -1,5 +1,10 @@
+5.4.0_2014.07.22_r29 - July 22, 2014 by Leliel
+* Update toc to last wow version
+* Update LibSimpleOptions to fix few errors with configuration 
+
+
 4.2.0_2011.07.09_r28 - July 9, 2011 by Leliel
-* Little fix cause i have 7 days to test ^^
+* Little fix cause I have 7 days to test ^^
 
 
 4.0.3a_2011.02.07_r26 - February 1, 2011 by Leliel
