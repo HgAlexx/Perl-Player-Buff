@@ -22,7 +22,7 @@ local panelWidth = 0;
 local Perl_Player_Buff_Enhanced_Config_DataBroker = LibStub:GetLibrary("LibDataBroker-1.1")
 local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Config_DataBroker:NewDataObject(addonName, {
     type = 'launcher',
-    text = addonName,
+    label = addonName,
     icon = 'Interface\\AddOns\\Perl_Config\\Perl_Minimap_Button',
     OnClick = function(clickedframe, button)
         if button == 'RightButton' then
@@ -55,7 +55,8 @@ function Perl_Player_Buff_Enhanced_Config_ToggleOptions()
             PPBECConfigPanelMain:refresh();
             InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
         else
-            ToggleGameMenu();
+            InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
+            -- securecall(ToggleGameMenu); -- doesn't work anymore :(
         end
     end
 end
