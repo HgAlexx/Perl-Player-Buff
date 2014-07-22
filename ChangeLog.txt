@@ -1,4 +1,8 @@
-5.4.0_2014.07.22_r29 - July 22, 2014 by Leliel
+5.4.8_2014.07.22_r30 - July 22, 2014 by Leliel
+* Update for release
+
+
+5.4.8_2014.07.22_r29 - July 22, 2014 by Leliel
 * Update toc to last wow version
 * Update LibSimpleOptions to fix few errors with configuration 
 

@@ -131,9 +131,8 @@ function Perl_Player_Buff_OnUpdate(self, ...)
          Perl_Player_Buff_Align();
          
          -- MOTV (Message of the Version)
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Now support ButtonFacade skining!");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Not in your language ? Add it ! Visit our page on curse.com");
+         --DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
+         --DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - ");
       end
    end
 end
@@ -201,15 +200,15 @@ function Perl_Player_Buff_Initialize()
       Original_Perl_Player_Set_Show_Paladin_Power_Bar = Perl_Player_Set_Show_Paladin_Power_Bar;
       Perl_Player_Set_Show_Paladin_Power_Bar = Enhanced_Perl_Player_Set_Show_Paladin_Power_Bar;
       SpecialBar = PaladinPowerBar;
-      elseif playerClass == "WARLOCK" then -- Shard Bar
+   elseif playerClass == "WARLOCK" then -- Shard Bar
       Original_Perl_Player_Set_Show_Shard_Bar_Frame = Perl_Player_Set_Show_Shard_Bar_Frame;
       Perl_Player_Set_Show_Shard_Bar_Frame = Enhanced_Perl_Player_Set_Show_Shard_Bar_Frame;
       SpecialBar = ShardBarFrame;
-      elseif playerClass == "DRUID" then -- Eclipse Bar
+   elseif playerClass == "DRUID" then -- Eclipse Bar
       Original_Perl_Player_Set_Show_Eclipse_Bar_Frame = Perl_Player_Set_Show_Eclipse_Bar_Frame;
       Perl_Player_Set_Show_Eclipse_Bar_Frame = Enhanced_Perl_Player_Set_Show_Eclipse_Bar_Frame;
       SpecialBar = EclipseBarFrame;
-      elseif playerClass == "SHAMAN" then -- Totem Timer
+   elseif playerClass == "SHAMAN" then -- Totem Timer
       Original_Perl_Player_Set_Show_Totem_Timers = Perl_Player_Set_Show_Totem_Timers;
       Perl_Player_Set_Show_Totem_Timers = Enhanced_Perl_Player_Set_Show_Totem_Timers;
       SpecialBar = TotemFrame;
@@ -218,7 +217,7 @@ function Perl_Player_Buff_Initialize()
       if Perl_Player_Buff_Script_Frame and Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
          Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide
       end;
-      elseif playerClass == "DEATHKNIGHT" then -- Rune Frame
+   elseif playerClass == "DEATHKNIGHT" then -- Rune Frame
       Original_Perl_Player_Set_Show_Rune_Frame = Perl_Player_Set_Show_Rune_Frame;
       Perl_Player_Set_Show_Rune_Frame = Enhanced_Perl_Player_Set_Show_Rune_Frame;
       SpecialBar = RuneFrame;
