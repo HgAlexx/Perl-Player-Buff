@@ -49,13 +49,16 @@ local Perl_Player_Buff_Enhanced_Config_DataObject = Perl_Player_Buff_Enhanced_Co
 function Perl_Player_Buff_Enhanced_Config_ToggleOptions()
     if FirstOpened == 0 then
         InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
+        PPBECConfigPanelMain:refresh();
+        InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
         FirstOpened = 1;
     else
         if PPBECConfigPanelMain:IsVisible() ~= 1 then
             PPBECConfigPanelMain:refresh();
             InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
-        else
             InterfaceOptionsFrame_OpenToCategory(PPBECConfigPanelMain);
+        else
+            InterfaceOptionsFrame_Show();
             -- securecall(ToggleGameMenu); -- doesn't work anymore :(
         end
     end
