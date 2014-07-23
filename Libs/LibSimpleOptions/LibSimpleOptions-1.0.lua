@@ -1,6 +1,6 @@
 --[[
 Name: LibSimpleOptions-1.0
-Revision: $Rev: 46 $
+Revision: $Rev: 47 $
 Author(s): ckknight (ckknight@gmail.com)
 Website: http://ckknight.wowinterface.com/
 Description: A library to provide a way to easily create controls for Blizzard's options system
@@ -8,7 +8,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibSimpleOptions-1.0"
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 46 $"):match("(%d+)"))
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 47 $"):match("(%d+)"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -358,6 +358,7 @@ do
 		slider:SetMinMaxValues(args.minValue, args.maxValue)
 		if args.step then
 			slider:SetValueStep(args.step)
+            slider:SetObeyStepOnDrag(true)
 		end
 		slider.oldValue = current
 		slider.value = current

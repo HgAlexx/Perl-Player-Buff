@@ -131,8 +131,9 @@ function Perl_Player_Buff_OnUpdate(self, ...)
          Perl_Player_Buff_Align();
          
          -- MOTV (Message of the Version)
-         --DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
-         --DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - ");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Fix slider bug in configuration panel");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Please report any bug on http://www.curse.com/addons/wow/perl-player-buff");
       end
    end
 end
