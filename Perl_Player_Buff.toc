@@ -1,7 +1,7 @@
-## Interface: 50400
+## Interface: 60300
 ## Title: Perl Player Buff, fan updated by Leliel
 ## Notes: Displays buffs below the Player Frame
-## Author: microAlexx AKA Leliel, Yui, Nerv, Neon at EU-Ysondre
+## Author: Leliel at EU-Ysondre
 ## Version: @project-version@
 ## Dependencies: Perl_Config, Perl_Player
 ## SavedVariables: Perl_Player_Buff_Config, PPB_Enhanced_Config
