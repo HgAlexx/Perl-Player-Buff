@@ -53,6 +53,9 @@ local Original_Perl_Player_Set_Show_Shard_Bar_Frame = nil;
 local Original_Perl_Player_Set_Show_Eclipse_Bar_Frame = nil;
 local Original_Perl_Player_Set_Show_Rune_Frame = nil;
 local Original_Perl_Player_Set_Show_Totem_Timers = nil;
+local Original_Perl_Player_Set_Show_Harmony_Bar_Frame = nil;
+local Original_Perl_Player_Set_Show_Priest_Bar_Frame = nil;
+local Original_Perl_Player_Frame_Style = nil;
 
 local Perl_Player_Buff_Events = {}; -- event manager
 
@@ -92,6 +95,11 @@ local Perl_Player_Buff_DelayedInit = 0;
 -- Button Facade support
 local LibBF = LibStub('LibButtonFacade', true)
 
+function Perl_Player_Buff_DebugMsg(text)
+    if Perl_Player_Buff_DebugMode then
+        DEFAULT_CHAT_FRAME:AddMessage("Perl Player Buff: "..text);
+    end
+end
 ----------------------
 -- Loading Function --
 ----------------------
@@ -132,7 +140,7 @@ function Perl_Player_Buff_OnUpdate(self, ...)
          
          -- MOTV (Message of the Version)
          DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Fix slider bug in configuration panel");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Add support for Monk and Priest");
          DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Please report any bug on http://www.curse.com/addons/wow/perl-player-buff");
       end
    end
@@ -197,6 +205,9 @@ function Perl_Player_Buff_Initialize()
    Original_Perl_Player_XPBar_Display = Perl_Player_XPBar_Display;
    Perl_Player_XPBar_Display = Enhanced_Perl_Player_XPBar_Display;
    
+   Original_Perl_Player_Frame_Style = Perl_Player_Frame_Style;
+   Perl_Player_Frame_Style = Enhanced_Perl_Player_Frame_Style;
+   
    if playerClass == "PALADIN" then -- Paladin Power Bar
       Original_Perl_Player_Set_Show_Paladin_Power_Bar = Perl_Player_Set_Show_Paladin_Power_Bar;
       Perl_Player_Set_Show_Paladin_Power_Bar = Enhanced_Perl_Player_Set_Show_Paladin_Power_Bar;
@@ -222,10 +233,18 @@ function Perl_Player_Buff_Initialize()
       Original_Perl_Player_Set_Show_Rune_Frame = Perl_Player_Set_Show_Rune_Frame;
       Perl_Player_Set_Show_Rune_Frame = Enhanced_Perl_Player_Set_Show_Rune_Frame;
       SpecialBar = RuneFrame;
+   elseif playerClass == "PRIEST" then -- Priest Frame
+      Original_Perl_Player_Set_Show_Priest_Bar_Frame = Perl_Player_Set_Show_Priest_Bar_Frame;
+      Perl_Player_Set_Show_Priest_Bar_Frame = Enhanced_Perl_Player_Set_Show_Priest_Bar_Frame;
+      SpecialBar = PriestBarFrame;
+   elseif playerClass == "MONK" then -- Harmony Frame
+      Original_Perl_Player_Set_Show_Harmony_Bar_Frame = Perl_Player_Set_Show_Harmony_Bar_Frame;
+      Perl_Player_Set_Show_Harmony_Bar_Frame = Enhanced_Perl_Player_Set_Show_Harmony_Bar_Frame;
+      SpecialBar = MonkHarmonyBar;
    else
       SpecialBar = nil;
    end;
-   
+
    -- Major config options.
    Perl_Player_BuffFrame:SetBackdropColor(0, 0, 0, 1);
    Perl_Player_BuffFrame:SetBackdropBorderColor(0.5, 0.5, 0.5, 1);
@@ -233,7 +252,7 @@ function Perl_Player_Buff_Initialize()
    
    hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", Perl_Player_Buff_Align);                           -- handle buff anchor
    hooksecurefunc("DebuffButton_UpdateAnchors", Perl_Player_Buff_DebuffButton_UpdateAnchors);          -- handle debuff anchor
-   hooksecurefunc("AuraButton_UpdateDuration", Perl_Player_Buff_AuraButton_UpdateDuration );           -- handle buff, debuff and temp enchant duration
+   hooksecurefunc("AuraButton_UpdateDuration", Perl_Player_Buff_AuraButton_UpdateDuration);           -- handle buff, debuff and temp enchant duration
    --hooksecurefunc("BuffFrame_Update", Perl_Player_Buff_BuffFrame_Update);                              -- handle buff type and state (filter -> castable / curable)
    --hooksecurefunc("AuraButton_Update", Perl_Player_Buff_AuraButton_Update);
    
@@ -313,6 +332,7 @@ function Perl_Player_GetStringTime(timenum)
 end
 
 function Perl_Player_DisableWeaponHandle()
+   Perl_Player_Buff_DebugMsg("Perl_Player_DisableWeaponHandle");
    for i=1, 3 do
       local buff = _G["TempEnchant"..i];
       if buff then
@@ -341,6 +361,7 @@ function Perl_Player_DisableWeaponHandle()
 end
 
 function Perl_Player_EnableWeaponHandle()
+   Perl_Player_Buff_DebugMsg("Perl_Player_EnableWeaponHandle");
    --[[
    for i=1, 3 do
       local buff = _G["TempEnchant"..i];
@@ -390,6 +411,7 @@ end
 
 -- Compatibility wrapper
 function Perl_Player_Buff_Allign()
+   Perl_Player_Buff_DebugMsg("Perl_Player_Buff_Allign");
    Perl_Player_Buff_Align(true);
    Perl_Player_Buff_Align();
 end
@@ -400,10 +422,10 @@ function Perl_Player_Buff_SpecBarYOffSet(frame, yFirstOffset)
     - not nil
     - visible
     - anchor to Perl_Player_Frame
-    - in visible screen zone ( x > 0 ) (Pler Player move the bar outside screen to hide it)
+    - in visible screen zone ( y < UIParent.Height ) (Perl Player move the bar outside screen to hide it)
     --]]
-   if frame and frame:IsVisible() and frame:GetParent():GetName() == "Perl_Player_Frame" and select(4, frame:GetPoint()) >= 0 then
-      yFirstOffset = yFirstOffset - (frame:GetHeight()) ;
+   if frame and frame:IsVisible() and frame:GetParent():GetName() == "Perl_Player_Frame" and math.abs(select(4, frame:GetPoint())) < UIParent:GetHeight() then
+      yFirstOffset = yFirstOffset - (frame:GetHeight());
    end
    return yFirstOffset;
 end
@@ -413,6 +435,7 @@ end
 --  TRUE  = update anchor location
 --  FALSE = update buffs locations (defaults)
 function Perl_Player_Buff_Align(yFirstOffset)
+   Perl_Player_Buff_DebugMsg("Perl_Player_Buff_Align");
    yFirstOffset = yFirstOffset or false;
    if yFirstOffset then
       Perl_Player_Buff_BuffFrameFixAnchor_UpdateAnchor();
@@ -427,11 +450,8 @@ end
 
 -- adjust the FixAnchor offset values (X and Y)
 function Perl_Player_Buff_BuffFrameFixAnchor_UpdateAnchor()
-   
-   if Perl_Player_Buff_DebugMode then
-      DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff Perl: Perl_Player_Buff_BuffFrameFixAnchor_UpdateAnchor called: ".. PPBEC_xOffset .. "|" .. PPBEC_yOffset);
-   end
-   
+   Perl_Player_Buff_DebugMsg("Perl_Player_Buff_BuffFrameFixAnchor_UpdateAnchor: PPBEC_xOffset, PPBEC_yOffset: " .. PPBEC_xOffset .. "," .. PPBEC_yOffset);
+      
    if showbuffs ~= 1 then
       return
    end
@@ -442,10 +462,12 @@ function Perl_Player_Buff_BuffFrameFixAnchor_UpdateAnchor()
    -- Perl StatFrame Height
    yFirstOffset = yFirstOffset - Perl_Player_StatsFrame:GetHeight();
    
-   -- TODO orientation: skip that is going UP
+   -- TODO orientation: skip that if going UP
    if SpecialBar ~= nil then
       yFirstOffset = Perl_Player_Buff_SpecBarYOffSet(SpecialBar, yFirstOffset)
    end;
+   
+   Perl_Player_Buff_DebugMsg("Compute SpecBarYOffSet, xFirstOffset, yFirstOffset: " .. xFirstOffset .. "," .. yFirstOffset);
    
    -- init first anchor relatively to the most left displayed frame, which is Perl_Player_NameFrame
    Perl_Player_BuffFrameFixAnchor:ClearAllPoints();
@@ -459,10 +481,8 @@ end
 local TopLeftAnchorBuff  = nil; -- the first frame of current line, needed to anchor the first of the next line
 local CurrentAnchorBuff  = nil; -- the last frame anchored, needed to anchor the next
 function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
-   if Perl_Player_Buff_DebugMode then
-      DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff Perl: Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors called: " .. BUFF_ACTUAL_DISPLAY);
-   end
-   
+   Perl_Player_Buff_DebugMsg("Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors: PPBEC_xOffset, PPBEC_yOffset: " .. PPBEC_xOffset .. "," .. PPBEC_yOffset);
+      
    if showbuffs ~= 1 then
       return
    end
@@ -565,9 +585,7 @@ end
 local TopLeftAnchorDeBuff = nil; -- the first frame of current line, needed to anchor the first of the next line
 local CurrentAnchorDeBuff = nil;
 function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
-   if Perl_Player_Buff_DebugMode then
-      DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff Perl: Perl_Player_Buff_DebuffButton_UpdateAnchors called: " .. index);
-   end
+   Perl_Player_Buff_DebugMsg("Perl_Player_Buff_DebuffButton_UpdateAnchors: PPBEC_xOffset, PPBEC_yOffset: " .. PPBEC_xOffset .. "," .. PPBEC_yOffset);
    
    if showbuffs ~= 1 then
       return
@@ -646,6 +664,8 @@ end
 
 local UpdateDurationLastTime = 0;
 function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
+   Perl_Player_Buff_DebugMsg("Perl_Player_Buff_AuraButton_UpdateDuration: PPBEC_xOffset, PPBEC_yOffset: " .. PPBEC_xOffset .. "," .. PPBEC_yOffset);
+
    if showbuffs ~= 1 then
       local cooldownFrame = _G[auraButton:GetName().."Cooldown"];
       if cooldownFrame and cooldownFrame:IsShown() then
@@ -865,6 +885,11 @@ function Perl_Player_Buff_Set_Vertical_Spacing(number)
    Perl_Player_Buff_Align();
 end
 
+function Enhanced_Perl_Player_Frame_Style()
+   Original_Perl_Player_Frame_Style();
+   Perl_Player_Buff_Align(true);
+end
+
 -- Hook Player Config Function for hideclasslevelframe Update
 function Enhanced_Perl_Player_Set_Hide_Class_Level_Frame(newvalue)
    Original_Perl_Player_Set_Hide_Class_Level_Frame(newvalue);
@@ -911,6 +936,19 @@ function Enhanced_Perl_Player_Set_Show_Rune_Frame(newvalue)
    Original_Perl_Player_Set_Show_Rune_Frame(newvalue);
    Perl_Player_Buff_Align(true);
 end
+
+-- Hook Player Config Function for harmonybarframe Update
+function Enhanced_Perl_Player_Set_Show_Harmony_Bar_Frame(newvalue)
+   Original_Perl_Player_Set_Show_Harmony_Bar_Frame(newvalue);
+   Perl_Player_Buff_Align(true);
+end
+
+-- Hook Player Config Function for priestbarframe Update
+function Enhanced_Perl_Player_Set_Show_Priest_Bar_Frame(newvalue)
+   Original_Perl_Player_Set_Show_Priest_Bar_Frame(newvalue);
+   Perl_Player_Buff_Align(true);
+end
+
 
 ------------------------------
 -- Saved Variable Functions --
