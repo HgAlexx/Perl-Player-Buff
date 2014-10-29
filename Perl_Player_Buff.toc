@@ -26,3 +26,4 @@ Localizations\Localization.zhTW.lua
 Perl_Player_Buff.xml
 
 Perl_Player_Buff_Enhanced_Config.lua
+
