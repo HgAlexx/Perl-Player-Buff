@@ -4,7 +4,7 @@ Originaly created by Global, current author of Perl Classic Units Frame
 
 Perl Player Buff is now maintained by Leliel AKA :
 - Leliel at Curse.com
-- Leliel, Yui, Nerv, Neon at EU-Ysondre
+- Lelielu, Yui, Neon at EU-Eldre'Thalas
 
 A set of new features has been added, all off by default and managed by a separeted config frame.
 
@@ -48,13 +48,8 @@ local Perl_Player_Buff_DebugMode = false;
 -- Hook Perl Config Function
 local Original_Perl_Player_Set_Hide_Class_Level_Frame = nil;
 local Original_Perl_Player_XPBar_Display = nil;
-local Original_Perl_Player_Set_Show_Paladin_Power_Bar = nil;
-local Original_Perl_Player_Set_Show_Shard_Bar_Frame = nil;
-local Original_Perl_Player_Set_Show_Eclipse_Bar_Frame = nil;
-local Original_Perl_Player_Set_Show_Rune_Frame = nil;
-local Original_Perl_Player_Set_Show_Totem_Timers = nil;
-local Original_Perl_Player_Set_Show_Harmony_Bar_Frame = nil;
-local Original_Perl_Player_Set_Show_Priest_Bar_Frame = nil;
+local Original_Perl_Player_Set_Show_Class_Resource_Frame = nil;
+
 local Original_Perl_Player_Frame_Style = nil;
 
 local Perl_Player_Buff_Events = {}; -- event manager
@@ -207,22 +202,14 @@ function Perl_Player_Buff_Initialize()
    
    Original_Perl_Player_Frame_Style = Perl_Player_Frame_Style;
    Perl_Player_Frame_Style = Enhanced_Perl_Player_Frame_Style;
-   
+
    if playerClass == "PALADIN" then -- Paladin Power Bar
-      Original_Perl_Player_Set_Show_Paladin_Power_Bar = Perl_Player_Set_Show_Paladin_Power_Bar;
-      Perl_Player_Set_Show_Paladin_Power_Bar = Enhanced_Perl_Player_Set_Show_Paladin_Power_Bar;
-      SpecialBar = PaladinPowerBar;
+      SpecialBar = PaladinPowerBarFrame;
    elseif playerClass == "WARLOCK" then -- Shard Bar
-      Original_Perl_Player_Set_Show_Shard_Bar_Frame = Perl_Player_Set_Show_Shard_Bar_Frame;
-      Perl_Player_Set_Show_Shard_Bar_Frame = Enhanced_Perl_Player_Set_Show_Shard_Bar_Frame;
-      SpecialBar = ShardBarFrame;
+      SpecialBar = WarlockPowerFrame;
    elseif playerClass == "DRUID" then -- Eclipse Bar
-      Original_Perl_Player_Set_Show_Eclipse_Bar_Frame = Perl_Player_Set_Show_Eclipse_Bar_Frame;
-      Perl_Player_Set_Show_Eclipse_Bar_Frame = Enhanced_Perl_Player_Set_Show_Eclipse_Bar_Frame;
       SpecialBar = EclipseBarFrame;
    elseif playerClass == "SHAMAN" then -- Totem Timer
-      Original_Perl_Player_Set_Show_Totem_Timers = Perl_Player_Set_Show_Totem_Timers;
-      Perl_Player_Set_Show_Totem_Timers = Enhanced_Perl_Player_Set_Show_Totem_Timers;
       SpecialBar = TotemFrame;
       -- WeaponEnchantDuration = 60*30; -- Shaman has 30min WeaponEnchant, and what if the player use a oil ? hmm ?
       local Perl_Player_Vars = Perl_Player_GetVars();
@@ -230,19 +217,19 @@ function Perl_Player_Buff_Initialize()
          Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE"); -- handle totem bar show/hide
       end;
    elseif playerClass == "DEATHKNIGHT" then -- Rune Frame
-      Original_Perl_Player_Set_Show_Rune_Frame = Perl_Player_Set_Show_Rune_Frame;
-      Perl_Player_Set_Show_Rune_Frame = Enhanced_Perl_Player_Set_Show_Rune_Frame;
       SpecialBar = RuneFrame;
    elseif playerClass == "PRIEST" then -- Priest Frame
-      Original_Perl_Player_Set_Show_Priest_Bar_Frame = Perl_Player_Set_Show_Priest_Bar_Frame;
-      Perl_Player_Set_Show_Priest_Bar_Frame = Enhanced_Perl_Player_Set_Show_Priest_Bar_Frame;
       SpecialBar = PriestBarFrame;
    elseif playerClass == "MONK" then -- Harmony Frame
-      Original_Perl_Player_Set_Show_Harmony_Bar_Frame = Perl_Player_Set_Show_Harmony_Bar_Frame;
-      Perl_Player_Set_Show_Harmony_Bar_Frame = Enhanced_Perl_Player_Set_Show_Harmony_Bar_Frame;
-      SpecialBar = MonkHarmonyBar;
+      SpecialBar = MonkHarmonyBarFrame;
+   elseif playerClass == "MAGE" then -- Harmony Frame
+      SpecialBar = MageArcaneChargesFrame;
    else
       SpecialBar = nil;
+   end;
+   if SpecialBar ~= nil then
+      Original_Perl_Player_Set_Show_Class_Resource_Frame = Perl_Player_Set_Show_Class_Resource_Frame;
+      Perl_Player_Set_Show_Class_Resource_Frame = Enhanced_Perl_Player_Set_Show_Class_Resource_Frame;
    end;
 
    -- Major config options.
@@ -352,7 +339,7 @@ function Perl_Player_DisableWeaponHandle()
          if buff.cdInitiated then
             local cooldownFrame = _G[buff:GetName().."Cooldown"];
             if cooldownFrame then
-               CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+               CooldownFrame_Set(cooldownFrame, 0, 0, 0);
             end
             buff.cdInitiated = false;
          end
@@ -388,7 +375,7 @@ end
 function Perl_Player_UseBuffs(useperlbuffs)
    if (useperlbuffs == 1) then
       SetCVar("buffDurations", 0); -- be sure this is off -> save cpu
-      SetCVar("consolidateBuffs", 0);
+      -- SetCVar("consolidateBuffs", 0);
       if PPBEC_HandleWeaponBuff == true then
          --
       else
@@ -402,7 +389,7 @@ function Perl_Player_UseBuffs(useperlbuffs)
       end
    else
       SetCVar("buffDurations", 1); -- set on back, well, we don't really know the previous state :p
-      SetCVar("consolidateBuffs", 1);
+      --SetCVar("consolidateBuffs", 1);
       Perl_Player_DisableWeaponHandle();
       Perl_Player_DisableDebuff();
       securecall(BuffFrame_Update);
@@ -501,7 +488,7 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
          if buff then
             local cooldownFrame = _G["TempEnchant"..buffButtonIndex.."Cooldown"];
             if cooldownFrame then
-               CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+               CooldownFrame_Set(cooldownFrame, 0, 0, 0);
                buff.CoolDownIsRuuning = false;
                if Perl_Player_Buff_DebugMode then
                   DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateAllBuffAnchors: " .. buff:GetName() .. " cdInitiated to false");
@@ -570,7 +557,7 @@ function Perl_Player_Buff_BuffFrame_UpdateAllBuffAnchors()
       
       local cooldownFrame = _G["BuffButton"..(buffButtonIndex-enchantCount).."Cooldown"];
       if cooldownFrame then
-         CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+         CooldownFrame_Set(cooldownFrame, 0, 0, 0);
          buff.CoolDownIsRuuning = false;
          if Perl_Player_Buff_DebugMode then
             DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateAllBuffAnchors: " .. buff:GetName() .. " cdInitiated to false");
@@ -640,7 +627,7 @@ function Perl_Player_Buff_DebuffButton_UpdateAnchors(buttonName, index)
    if buff.CoolDownIsRuuning and buff.CoolDownIsRuuning == true then
       local cooldownFrame = _G[buttonName..index.."Cooldown"];
       if cooldownFrame then
-         CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+         CooldownFrame_Set(cooldownFrame, 0, 0, 0);
          buff.CoolDownIsRuuning = false;
       end;
    end;
@@ -669,7 +656,7 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
    if showbuffs ~= 1 then
       local cooldownFrame = _G[auraButton:GetName().."Cooldown"];
       if cooldownFrame and cooldownFrame:IsShown() then
-         CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+         CooldownFrame_Set(cooldownFrame, 0, 0, 0);
       end
       return nil;
    end
@@ -705,14 +692,14 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
             if timeLeft and timeLeft > 0 then
                if not auraButton.CoolDownIsRuuning or auraButton.CoolDownIsRuuning == false then
                   local startTime = (GetTime()-WeaponEnchantDuration+timeLeft);
-                  CooldownFrame_SetTimer(cooldownFrame, startTime, WeaponEnchantDuration, 1);
+                  CooldownFrame_Set(cooldownFrame, startTime, WeaponEnchantDuration, 1);
                   auraButton.CoolDownIsRuuning = true;
                   if Perl_Player_Buff_DebugMode then
                      DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateDuration: " .. auraButton:GetName() .. " cdInitiated to true");
                   end
                end
             else
-               CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+               CooldownFrame_Set(cooldownFrame, 0, 0, 0);
                auraButton.CoolDownIsRuuning = false;
                if Perl_Player_Buff_DebugMode then
                   DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateDuration: " .. auraButton:GetName() .. " cdInitiated to false");
@@ -720,7 +707,7 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
             end
          else
             if auraButton.CoolDownIsRuuning and auraButton.CoolDownIsRuuning == true then
-               CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+               CooldownFrame_Set(cooldownFrame, 0, 0, 0);
                auraButton.CoolDownIsRuuning = false;
                if Perl_Player_Buff_DebugMode then
                   DEFAULT_CHAT_FRAME:AddMessage("|cff0000ff UpdateDuration: " .. auraButton:GetName() .. " cdInitiated to false");
@@ -730,12 +717,12 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
       else
          if auraButton.expirationTime and timeLeft and timeLeft > 0 then
             if not auraButton.CoolDownIsRuuning or auraButton.CoolDownIsRuuning == false then
-               CooldownFrame_SetTimer(cooldownFrame, auraButton.expirationTime - timeLeft, timeLeft, 1);
+               CooldownFrame_Set(cooldownFrame, auraButton.expirationTime - timeLeft, timeLeft, 1);
                auraButton.CoolDownIsRuuning = true;
             end
          else
             if cooldownFrame:IsShown() then
-               CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+               CooldownFrame_Set(cooldownFrame, 0, 0, 0);
                auraButton.CoolDownIsRuuning = false;
                -- should never pas here, since blizzard filter call to the function
             end;
@@ -743,7 +730,7 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
       end
    else
       if cooldownFrame ~= nil and auraButton:IsShown() then
-         CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0);
+         CooldownFrame_Set(cooldownFrame, 0, 0, 0);
          auraButton.CoolDownIsRuuning = false;
       end
    end
@@ -757,7 +744,7 @@ function Perl_Player_Buff_AuraButton_UpdateDuration(auraButton, timeLeft)
       cooldownFrame:SetAllPoints(auraButton);
       cooldownFrame:SetReverse(true);
       if not auraButton.CoolDownIsRuuning or auraButton.CoolDownIsRuuning == false then
-         CooldownFrame_SetTimer(cooldownFrame, 0, 0, 0); -- Hide CD is not show (but created))
+         CooldownFrame_Set(cooldownFrame, 0, 0, 0); -- Hide CD is not show (but created))
       end;
    end;
 end
@@ -902,50 +889,17 @@ function Enhanced_Perl_Player_XPBar_Display(newvalue)
    Perl_Player_Buff_Align(true);
 end
 
--- Hook Player Config Function for paladinpowerbar Update
-function Enhanced_Perl_Player_Set_Show_Paladin_Power_Bar(newvalue)
-   Original_Perl_Player_Set_Show_Paladin_Power_Bar(newvalue);
-   Perl_Player_Buff_Align(true);
-end
-
--- Hook Player Config Function for shardbarframe Update
-function Enhanced_Perl_Player_Set_Show_Shard_Bar_Frame(newvalue)
-   Original_Perl_Player_Set_Show_Shard_Bar_Frame(newvalue);
-   Perl_Player_Buff_Align(true);
-end
-
--- Hook Player Config Function for eclipsebarframe Update
-function Enhanced_Perl_Player_Set_Show_Eclipse_Bar_Frame(newvalue)
-   Original_Perl_Player_Set_Show_Eclipse_Bar_Frame(newvalue);
-   Perl_Player_Buff_Align(true);
-end
-
--- Hook Player Config Function for totemtimer Update
-function Enhanced_Perl_Player_Set_Show_Totem_Timers(newvalue)
-   Original_Perl_Player_Set_Show_Totem_Timers(newvalue);
-   if newvalue == 1 then
-      Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE");
-   else
-      Perl_Player_Buff_Script_Frame:UnRegisterEvent("PLAYER_TOTEM_UPDATE");
+-- Hook Player Config Function for class resource frame Update
+function Enhanced_Perl_Player_Set_Show_Class_Resource_Frame(newvalue)
+   local _, playerClass = UnitClass("player");
+   Original_Perl_Player_Set_Show_Class_Resource_Frame(newvalue);
+   if (playerClass == "SHAMAN") then
+      if (newvalue == 1) then
+         Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE");
+      else
+         Perl_Player_Buff_Script_Frame:UnRegisterEvent("PLAYER_TOTEM_UPDATE");
+      end;
    end;
-   Perl_Player_Buff_Align(true);
-end
-
--- Hook Player Config Function for runeframe Update
-function Enhanced_Perl_Player_Set_Show_Rune_Frame(newvalue)
-   Original_Perl_Player_Set_Show_Rune_Frame(newvalue);
-   Perl_Player_Buff_Align(true);
-end
-
--- Hook Player Config Function for harmonybarframe Update
-function Enhanced_Perl_Player_Set_Show_Harmony_Bar_Frame(newvalue)
-   Original_Perl_Player_Set_Show_Harmony_Bar_Frame(newvalue);
-   Perl_Player_Buff_Align(true);
-end
-
--- Hook Player Config Function for priestbarframe Update
-function Enhanced_Perl_Player_Set_Show_Priest_Bar_Frame(newvalue)
-   Original_Perl_Player_Set_Show_Priest_Bar_Frame(newvalue);
    Perl_Player_Buff_Align(true);
 end
 

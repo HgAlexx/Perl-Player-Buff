@@ -1,7 +1,11 @@
+7.0.3_2016.10.06_r38 - October 6, 2016 by Leliel
+* Update to wow 7.0.3
+
+
 6.0.3_2014.10.30_r35 - October 30, 2014 by Leliel
 * Add support for Monk and Priest power bar
 * Update to wow 6.0.3
- 
+
 
 5.4.8_2014.07.23_r33 - July 23, 2014 by Leliel
 * LibSimpleOptions: fix slider step behavior
