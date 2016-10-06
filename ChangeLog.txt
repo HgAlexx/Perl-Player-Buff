@@ -1,4 +1,4 @@
-7.0.3_2016.10.06_r40 - October 6, 2016 by Leliel
+7.0.3_2016.10.06_r41 - October 6, 2016 by Leliel
 * Update to wow 7.0.3
 
 
