@@ -135,8 +135,8 @@ function Perl_Player_Buff_OnUpdate(self, ...)
          
          -- MOTV (Message of the Version)
          DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Add support for Monk and Priest");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Please report any bug on http://www.curse.com/addons/wow/perl-player-buff");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Updated for Legion");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Please report any bug on https://mods.curse.com/addons/wow/perl-player-buff");
       end
    end
 end
