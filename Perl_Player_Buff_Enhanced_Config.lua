@@ -10,6 +10,9 @@ Perl Player Buff Enhanced Config :
  - Using Blizzard Interface Option Frame
 
 --]]
+
+-- http://www.wowinterface.com/forums/showthread.php?t=40444
+
 local addonName, _ = ...;
 addonName = string.gsub(addonName, "_", " ");
 
@@ -230,29 +233,7 @@ local function ShowPanelStyle(panel)
 
 end
 
-local function ShowPanelFilter(panel)
-    local myTitle = panel:MakeTitleTextAndSubText(addonName, PPBEC_Localization["PPBEC/ConfigPanelFilter/TitleDesc"]);
-    myTitle:SetPoint("TOPLEFT", panel, "TOPLEFT", 10, -10);
-    
-    local myCheckBoxDisplayCastableBuffs = panel:MakeToggle(
-        'name', 'Display Castable Buffs Only NOT WORKING',
-        'description', 'Display only buff you can cast. NOT WORKING',
-        'default', false,
-        'getFunc', function() return getCurrentValue("DisplayCastableBuffs") end,
-        'setFunc', function(value) Perl_Player_Buff_Set_DisplayCastableBuffs(value); end);
-    myCheckBoxDisplayCastableBuffs:SetPoint("TOPLEFT", myTitle, "BOTTOMLEFT", 0, -40);
-    
-    local myCheckBoxDisplayCurableDebuff = panel:MakeToggle(
-        'name', 'Display Curable Debuff Only NOT WORKING',
-        'description', 'Display only debuff you can cure. NOT WORKING',
-        'default', false,
-        'getFunc', function() return getCurrentValue("DisplayCurableDebuff") end,
-        'setFunc', function(value) Perl_Player_Buff_Set_DisplayCurableDebuff(value); end);
-    myCheckBoxDisplayCurableDebuff:SetPoint("TOPLEFT", myCheckBoxDisplayCastableBuffs, "BOTTOMLEFT", 0, -10);
-end
-
 PPBECConfigPanelMain = LibStub("LibSimpleOptions-1.0").AddOptionsPanel(addonName, ShowPanelMain);
--- PPBECConfigPanelFilter = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Filter", ShowPanelFilter)
 PPBECConfigPanelPosition = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Position", ShowPanelPosition)
 PPBECConfigPanelStyle = LibStub("LibSimpleOptions-1.0").AddSuboptionsPanel(addonName, "Style", ShowPanelStyle)
 

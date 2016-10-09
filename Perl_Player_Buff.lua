@@ -222,7 +222,7 @@ function Perl_Player_Buff_Initialize()
       SpecialBar = PriestBarFrame;
    elseif playerClass == "MONK" then -- Harmony Frame
       SpecialBar = MonkHarmonyBarFrame;
-   elseif playerClass == "MAGE" then -- Harmony Frame
+   elseif playerClass == "MAGE" then -- Arcane Frame
       SpecialBar = MageArcaneChargesFrame;
    else
       SpecialBar = nil;
