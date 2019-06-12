@@ -1,7 +1,10 @@
+8.1.5_2019.06.12_r44 - June 12, 2019 by Leliel
+* Update to wow 8.1.5
+
+
 7.0.3_2016.10.06_r42 - October 9, 2016 by Leliel
 * Add support for Mage Arcane bar
 * Update to wow 7.0.3
-
 
 
 6.0.3_2014.10.30_r35 - October 30, 2014 by Leliel
