@@ -3,8 +3,8 @@
 Originaly created by Global, current author of Perl Classic Units Frame
 
 Perl Player Buff is now maintained by Leliel AKA :
-- Leliel at Curse.com
-- Lelielu, Yui, Neon at EU-Eldre'Thalas
+- mZHg at curseforge.com
+- Leliel, Yui, Neon at EU-Eldre'Thalas
 
 A set of new features has been added, all off by default and managed by a separeted config frame.
 
