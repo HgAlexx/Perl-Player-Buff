@@ -1,12 +1,12 @@
 --[[
 
-Originaly created by Global, current author of Perl Classic Units Frame
+Originally created by Global, current author of Perl Classic Units Frame
 
 Perl Player Buff is now maintained by Leliel AKA :
 - mZHg at curseforge.com
 - Leliel, Yui, Neon at EU-Eldre'Thalas
 
-A set of new features has been added, all off by default and managed by a separeted config frame.
+A set of new features has been added, all off by default and managed by a separated config frame.
 
 List of new features (all toggleable):
 - Set the number of buffs per line
@@ -19,7 +19,7 @@ List of new features (all toggleable):
 - Adjustable vertical spacing
 - Adjustable x offset
 - Adjustable y offset
-- Adjustable horizontale orientation (with negative x offset ^^)
+- Adjustable horizontal orientation (with negative x offset ^^)
 - Adjustable vertical orientation (with negative y offset ^^)
 
 --]]

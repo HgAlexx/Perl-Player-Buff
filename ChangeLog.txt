@@ -1,3 +1,8 @@
+8.1.5_2019.06.16_r47 - June 16, 2019 by Leliel
+* Fix issue with Shaman
+* Improve spec change
+
+
 8.1.5_2019.06.12_r44 - June 12, 2019 by Leliel
 * Update to wow 8.1.5
 
