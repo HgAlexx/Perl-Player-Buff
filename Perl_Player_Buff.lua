@@ -134,9 +134,10 @@ function Perl_Player_Buff_OnUpdate(self, ...)
          Perl_Player_Buff_Align();
          
          -- MOTV (Message of the Version)
+         --[[
          DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff Perl Player Buff News:");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Updated for Legion");
-         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Please report any bug on https://mods.curse.com/addons/wow/perl-player-buff");
+         DEFAULT_CHAT_FRAME:AddMessage("|cff00ffff - Please report any bug on https://wow.curseforge.com/projects/perl-player-buff");
+         --]]
       end
    end
 end
@@ -156,6 +157,10 @@ function Perl_Player_Buff_Events:PLAYER_ENTERING_WORLD()
 end
 function Perl_Player_Buff_Events:PLAYER_TOTEM_UPDATE()
    Perl_Player_Buff_Align(true); -- recompute FixAnchor location related to totem bar
+end
+
+function Perl_Player_Buff_Events:ACTIVE_TALENT_GROUP_CHANGED()
+   Perl_Player_Buff_Align(true); -- recompute FixAnchor location related to power bar
 end
 
 -------------------------------
@@ -203,14 +208,20 @@ function Perl_Player_Buff_Initialize()
    Original_Perl_Player_Frame_Style = Perl_Player_Frame_Style;
    Perl_Player_Frame_Style = Enhanced_Perl_Player_Frame_Style;
 
+   local WatchSpec = false;
+
    if playerClass == "PALADIN" then -- Paladin Power Bar
       SpecialBar = PaladinPowerBarFrame;
+      WatchSpec = true;
    elseif playerClass == "WARLOCK" then -- Shard Bar
       SpecialBar = WarlockPowerFrame;
+      WatchSpec = true;
    elseif playerClass == "DRUID" then -- Eclipse Bar
       SpecialBar = EclipseBarFrame;
+      WatchSpec = true;
    elseif playerClass == "SHAMAN" then -- Totem Timer
       SpecialBar = TotemFrame;
+      WatchSpec = true;
       -- WeaponEnchantDuration = 60*30; -- Shaman has 30min WeaponEnchant, and what if the player use a oil ? hmm ?
       local Perl_Player_Vars = Perl_Player_GetVars();
       if Perl_Player_Buff_Script_Frame and Perl_Player_Vars and Perl_Player_Vars["totemtimers"] == 1 then
@@ -218,18 +229,27 @@ function Perl_Player_Buff_Initialize()
       end;
    elseif playerClass == "DEATHKNIGHT" then -- Rune Frame
       SpecialBar = RuneFrame;
+      WatchSpec = true;
    elseif playerClass == "PRIEST" then -- Priest Frame
       SpecialBar = PriestBarFrame;
+      WatchSpec = true;
    elseif playerClass == "MONK" then -- Harmony Frame
       SpecialBar = MonkHarmonyBarFrame;
+      WatchSpec = true;
    elseif playerClass == "MAGE" then -- Arcane Frame
       SpecialBar = MageArcaneChargesFrame;
+      WatchSpec = true;
    else
       SpecialBar = nil;
    end;
+
    if SpecialBar ~= nil then
       Original_Perl_Player_Set_Show_Class_Resource_Frame = Perl_Player_Set_Show_Class_Resource_Frame;
       Perl_Player_Set_Show_Class_Resource_Frame = Enhanced_Perl_Player_Set_Show_Class_Resource_Frame;
+   end;
+
+   if WatchSpec then
+      Perl_Player_Buff_Script_Frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
    end;
 
    -- Major config options.
@@ -897,7 +917,7 @@ function Enhanced_Perl_Player_Set_Show_Class_Resource_Frame(newvalue)
       if (newvalue == 1) then
          Perl_Player_Buff_Script_Frame:RegisterEvent("PLAYER_TOTEM_UPDATE");
       else
-         Perl_Player_Buff_Script_Frame:UnRegisterEvent("PLAYER_TOTEM_UPDATE");
+         Perl_Player_Buff_Script_Frame:UnregisterEvent("PLAYER_TOTEM_UPDATE");
       end;
    end;
    Perl_Player_Buff_Align(true);
