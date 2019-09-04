@@ -1,0 +1,92 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <Button name="PPB_AuraButtonTemplate" inherits="SecureActionButtonTemplate" virtual="true">
+        <Size x="30" y="30"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentIcon"/>
+                <FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
+                    <Anchors>
+                        <Anchor point="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="-2" y="2"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentDuration" inherits="GameFontNormalSmall" hidden="true" parentKey="duration">
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="BOTTOM" />
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnEnter>
+                GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
+                GameTooltip:SetFrameLevel(self:GetFrameLevel() + 2);
+                if self:GetAttribute("target-slot") then
+                    GameTooltip:SetInventoryItem("player", self:GetID());
+                else
+                    GameTooltip:SetUnitAura("player", self:GetID(), self.filter);
+                end
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide();
+            </OnLeave>
+        </Scripts>
+    </Button>
+
+    <Button name="PPB_BuffButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true">
+        <Attributes>
+            <Attribute name="type" value="cancelaura" />
+        </Attributes>
+        <Scripts>
+            <OnLoad>
+                self:RegisterForClicks("RightButtonUp");
+            </OnLoad>
+        </Scripts>
+    </Button>
+
+    <Button name="PPB_DebuffButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true">
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays">
+                    <Size>
+                        <AbsDimension x="33" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                    <TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+                </Texture>
+                <FontString parentKey="symbol" inherits="TextStatusBarText">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset x="2" y="-2"/>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                self.duration:SetPoint("TOP", self, "BOTTOM", 0, -1);
+            </OnLoad>
+        </Scripts>
+    </Button>
+
+    <Button name="PPB_TempEnchantButtonTemplate" inherits="PPB_BuffButtonTemplate" virtual="true">
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">
+                    <Size>
+                        <AbsDimension x="32" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+    </Button>
+</Ui>

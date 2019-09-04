@@ -1,3 +1,7 @@
+8.2._2019.09.04_beta - Septembr 04, 2019 by Leliel
+* Complete rewrite for retail 8.2.0 and classic 1.13.2 using SecureActionButtonTemplate
+
+
 8.1.5_2019.06.16_r47 - June 16, 2019 by Leliel
 * Fix issue with Shaman
 * Improve spec change
