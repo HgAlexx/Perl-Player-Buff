@@ -1,16 +1,14 @@
-## Interface: 80100
+## Interface: 80200
 ## Title: Perl Player Buff, fan updated by Leliel
 ## Notes: Displays buffs below the Player Frame
 ## Author: Leliel at EU-Eldre'Thalas
 ## Version: @project-version@
 ## Dependencies: Perl_Config, Perl_Player
-## SavedVariables: Perl_Player_Buff_Config, PPB_Enhanced_Config
-## OptionalDeps: ButtonFacade
+## SavedVariablesPerCharacter: Perl_Player_Buff_Settings
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 Libs\LibDataBroker\LibDataBroker-1.1.lua
-Libs\LibSimpleOptions\LibSimpleOptions-1.0.lua
 
 Localizations\Localization.enUS.lua
 
@@ -23,6 +21,7 @@ Localizations\Localization.ruRU.lua
 Localizations\Localization.zhCN.lua
 Localizations\Localization.zhTW.lua
 
-Perl_Player_Buff.xml
-
-Perl_Player_Buff_Enhanced_Config.lua
+core.xml
+core.lua
+broker.lua
+config.lua
