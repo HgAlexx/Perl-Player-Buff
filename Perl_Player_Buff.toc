@@ -1,5 +1,5 @@
 ## Interface: 80200
-## Title: Perl Player Buff, fan updated by Leliel
+## Title: Perl Player Buff
 ## Notes: Displays buffs below the Player Frame
 ## Author: Leliel at EU-Eldre'Thalas
 ## Version: @project-version@

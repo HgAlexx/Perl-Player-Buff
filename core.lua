@@ -3,7 +3,7 @@
 
     Perl Player Buff is now maintained by Leliel AKA :
     - mZHg at curseforge.com
-    - Leliel, Yui, Neon, Sahaquile at EU-Eldre'Thalas
+    - Leliel, Yui, Neon, Sahaquiel at EU-Eldre'Thalas (retail)
 
     Thanks to sigg for his tutorial on SecureAura Template
     https://www.wowinterface.com/forums/showthread.php?t=36117
@@ -15,12 +15,12 @@
 --]]
 
 local addonName, ns = ...
-Perl_Player_Buff_Version = GetAddOnMetadata(addonName, 'Version');
+Perl_Player_Buff_Version = GetAddOnMetadata(addonName, "Version")
 
 local defaultSettings = {
     enabled = true,
     offsetVertical = 0,
-    offsetHorizontal = -30,
+    offsetHorizontal = 0,
     spacingVertical = 2,
     spacingHorizontal = 2,
     scaling = 0.64,
@@ -36,8 +36,8 @@ local initialized = false
 local auraTextHeight = 15
 local debuffBaseVerticalOffset = 2
 local auraWidth = 30
-local playerClass = nil
-local SpecialBar = nil;
+local playerClass
+local SpecialBar
 local IsClassic = false
 
 PPB = CreateFrame("Frame", nil, UIParent)
@@ -56,6 +56,7 @@ function PPB:Print(...)
     DEFAULT_CHAT_FRAME:AddMessage(string.join(" ", "|cff00ffffPerl Player Buff|r:", ...))
 end
 function PPB:Debug(...)
+    --@debug@
     -- [[
     local arg = {...}
     local t = ""
@@ -64,6 +65,7 @@ function PPB:Debug(...)
     end
     DEFAULT_CHAT_FRAME:AddMessage("|cffff3333Perl Player Buff|r:" .. t)
     --]]
+    --@end-debug@
 end
 function PPB:GetTime()
     return (debugprofilestop() / 1000)
@@ -89,12 +91,6 @@ function PPB:UpdateEnabled()
             if PPB_FixAnchor and not PPB_FixAnchor:IsShown() then
                 PPB_FixAnchor:Show()
             end
-            if PPb_Buffs then
-                PPb_Buffs:RegisterEvent("UNIT_AURA")
-            end
-            if PPb_Debuffs then
-                PPb_Debuffs:RegisterEvent("UNIT_AURA")
-            end
             if BuffFrame then
                 BuffFrame:UnregisterAllEvents()
                 BuffFrame:Hide()
@@ -102,12 +98,6 @@ function PPB:UpdateEnabled()
         else
             if PPB_FixAnchor and PPB_FixAnchor:IsShown() then
                 PPB_FixAnchor:Hide()
-            end
-            if PPb_Buffs then
-                PPb_Buffs:UnregisterAllEvents()
-            end
-            if PPb_Debuffs then
-                PPb_Debuffs:UnregisterAllEvents()
             end
             if BuffFrame then
                 BuffFrame_OnLoad(BuffFrame)
@@ -123,15 +113,14 @@ function PPB:UpdateWeaponBuff()
         if settings.enabled and settings.weaponBuff then
             if PPB_Buffs then
                 PPB_Buffs:SetAttribute("includeWeapons", 1)
-                PPB_Buffs:SetAttribute("weaponTemplate", "PPB_TempEnchantButtonTemplate")
             end
             if TemporaryEnchantFrame then
                 TemporaryEnchantFrame:Hide()
             end
         else
             if PPB_Buffs then
+                self:HideAllWeaponBuffs()
                 PPB_Buffs:SetAttribute("includeWeapons", 0)
-                PPB_Buffs:SetAttribute("weaponTemplate", "")
             end
             if TemporaryEnchantFrame then
                 TemporaryEnchantFrame:Show()
@@ -146,7 +135,7 @@ function PPB:UpdateFixAnchorLocation()
         if SpecialBar ~= nil then
             yOffset = self:SpecBarYOffSet(SpecialBar, yOffset)
         end;
-        PPB_FixAnchor:SetPoint('TOPLEFT', Perl_Player_StatsFrame, "BOTTOMLEFT", settings.offsetHorizontal, yOffset + settings.offsetVertical)
+        PPB_FixAnchor:SetPoint("TOPLEFT", Perl_Player_StatsFrame, "BOTTOMLEFT", settings.offsetHorizontal, yOffset + settings.offsetVertical)
     end
 end
 
@@ -205,9 +194,9 @@ end
 function PPB:UpdateDebuffRelativeAnchorPoint()
     if not InCombatLockdown() and PPB_Debuffs then
         if settings.showOriginalTextTimer then
-            PPB_Debuffs:SetPoint('TOPLEFT', PPB_Buffs, "BOTTOMLEFT", 0, -auraTextHeight)
+            PPB_Debuffs:SetPoint("TOPLEFT", PPB_Buffs, "BOTTOMLEFT", 0, -auraTextHeight)
         else
-            PPB_Debuffs:SetPoint('TOPLEFT', PPB_Buffs, "BOTTOMLEFT", 0, -debuffBaseVerticalOffset)
+            PPB_Debuffs:SetPoint("TOPLEFT", PPB_Buffs, "BOTTOMLEFT", 0, -debuffBaseVerticalOffset)
         end
     end
 end
@@ -220,6 +209,7 @@ function PPB:ChangeSettings_Enabled(value)
         if (type(value) == "boolean") then
             settings.enabled = value
             self:UpdateEnabled()
+            self:UpdateWeaponBuff()
         end
     end
 end
@@ -305,7 +295,6 @@ function PPB:ChangeSettings_ShowOriginalTextTimer(value)
             self:UpdateDebuffRelativeAnchorPoint()
             self:UpdateBuffSpacingVertical()
             self:UpdateDebuffSpacingVertical()
-            self:UpdateAllAura()
         end
     end
 end
@@ -447,7 +436,7 @@ function PPB:SlashHandler(message, editbox)
             self:ChangeSettings_Scaling(i)
         end
     else
-        self:Print("Usage:")
+        self:Print("Usage: /ppb command <value>")
         self:Print("/ppb enabled: 1 = enabled, 0 = disabled")
         self:Print("/ppb showNativeCooldown: 1 = enabled, 0 = disabled")
         self:Print("/ppb showOriginalTextTimer: 1 = enabled, 0 = disabled")
@@ -474,7 +463,6 @@ function PPB:ADDON_LOADED(event, addon)
     end
 
     -- internal variables
-    self.BuffFrameUpdateTime = 0;
     self.BuffFrameFlashTime = 0;
     self.BuffFrameFlashState = 1;
     self.BuffAlphaValue = 1;
@@ -492,7 +480,9 @@ function PPB:ADDON_LOADED(event, addon)
 
     -- load some settings only if we are running the same build
     if prevBuild and (prevBuild == currBuild) then
-        -- settings.todo = Perl_Player_Buff_Settings.todo or "default value"
+        -- TODO
+    else
+        -- TODO
     end
 
     -- load other settings
@@ -538,7 +528,6 @@ end
 
 function PPB:PLAYER_LOGIN()
     self:RegisterEvent("PLAYER_LOGOUT")
-    -- self:RegisterEvent("PLAYER_REGEN_ENABLED")
 
     self:UnregisterEvent("PLAYER_LOGIN")
     self.PLAYER_LOGIN = nil
@@ -550,9 +539,6 @@ function PPB:PLAYER_LOGIN()
     self:CreateFrames()
 
     initialized = true
-
-    self:UpdateBuffs(PPB_Buffs)
-    self:UpdateDebuffs(PPB_Debuffs)
 
     if BuffFrame then
         BuffFrame:UnregisterAllEvents()
@@ -690,35 +676,17 @@ local PPB_Debuffs = nil
 local PPB_FixAnchor = nil
 local PPB_BuffFrame = nil
 
-PPB.PPB_Buffs_OnEvent = function(header, event, unit)
-    if (unit ~= "player" and unit ~= "vehicle") or event ~= "UNIT_AURA" then
-        return
-    end
-    if settings.enabled then
-        PPB:UpdateBuffs(header)
-    end
-end
-
-PPB.PPB_Debuffs_OnEvent = function(header, event, unit)
-    if (unit ~= "player" and unit ~= "vehicle") or event ~= "UNIT_AURA" then
-        return
-    end
-    if settings.enabled then
-        PPB:UpdateDebuffs(header)
-    end
-end
-
 function PPB:CreateFrames()
     PPB_FixAnchor = CreateFrame("Frame", "PPB_FixAnchor", Perl_Player_Frame)
     PPB_FixAnchor:ClearAllPoints()
     PPB_FixAnchor:SetSize(1, 1)
-    PPB_FixAnchor:SetPoint('TOPLEFT', Perl_Player_StatsFrame, "BOTTOMLEFT", settings.offsetHorizontal, settings.offsetVertical)
+    PPB_FixAnchor:SetPoint("TOPLEFT", Perl_Player_StatsFrame, "BOTTOMLEFT", settings.offsetHorizontal, settings.offsetVertical)
     PPB_FixAnchor:Show()
 
     PPB_BuffFrame = CreateFrame("Frame", "PPB_BuffFrame", PPB_FixAnchor)
     PPB_BuffFrame:ClearAllPoints()
     PPB_BuffFrame:SetSize(1, 1)
-    PPB_BuffFrame:SetPoint('TOPLEFT', PPB_FixAnchor, "TOPLEFT", 0, 0)
+    PPB_BuffFrame:SetPoint("TOPLEFT", PPB_FixAnchor, "TOPLEFT", 0, 0)
     self:SetBuffScale()
     PPB_BuffFrame:Show()
 
@@ -726,8 +694,8 @@ function PPB:CreateFrames()
     PPB_Buffs:ClearAllPoints()
     self:SetHeaderAttribute(PPB_Buffs, "HELPFUL", "PPB_BuffButtonTemplate")
     self:UpdateWeaponBuff() -- set weapon attributes if needed
-    PPB_Buffs:SetPoint('TOPLEFT', PPB_BuffFrame, "TOPLEFT", 0, 0)
-    PPB_Buffs:HookScript("OnEvent", PPB.PPB_Buffs_OnEvent)
+    PPB_Buffs:SetPoint("TOPLEFT", PPB_BuffFrame, "TOPLEFT", 0, 0)
+    PPB_Buffs:HookScript("OnAttributeChanged", self.HeaderAttributeChanged)
     PPB_Buffs:Show()
 
     PPB_Debuffs = CreateFrame("frame","PPB_Debuffs",PPB_Buffs,"SecureAuraHeaderTemplate")
@@ -737,15 +705,186 @@ function PPB:CreateFrames()
     if settings.showOriginalTextTimer then
         yOffset = -auraTextHeight
     end
-    PPB_Debuffs:SetPoint('TOPLEFT', PPB_Buffs, "BOTTOMLEFT", 0, yOffset)
-    PPB_Debuffs:HookScript("OnEvent", PPB.PPB_Debuffs_OnEvent)
+    PPB_Debuffs:SetPoint("TOPLEFT", PPB_Buffs, "BOTTOMLEFT", 0, yOffset)
+    PPB_Debuffs:HookScript("OnAttributeChanged", self.HeaderAttributeChanged)
     PPB_Debuffs:Show()
+end
+
+function PPB:HideAllWeaponBuffs()
+    for i = 1, 3 do
+        local child = PPB_Buffs:GetAttribute("tempEnchant" .. i)
+        if child and child:IsShown() then
+            self:SetTimeleftText(child, 0)
+            self:SetCoolDown(child, 0, 0)
+            self:SetAuraAlpha(child, BUFF_WARNING_TIME + 1)
+            child:Hide()
+        end
+    end
+end
+
+function PPB:HeaderAttributeChanged(name, data)
+    if name and data then
+        if string.match(name, "^child") then
+            local child = data
+            if child:IsShown() then
+                child.filter = self.filter
+                child:SetScript("OnAttributeChanged", function(self, attribute, value)
+                    if attribute == "index" then
+                        if self.filter == "HELPFUL" then
+                            PPB:UpdateBuff(self, value)
+                        elseif self.filter == "HARMFUL" then
+                            PPB:UpdateDebuff(self, value)
+                        end
+                    end
+                end)
+                child:SetScript("OnUpdate", function(self, elapsed)
+                    PPB:UpdateTime(self, elapsed)
+                end)
+            end
+        elseif string.match(name, "^tempenchant") then
+            local child = data
+            if child:IsShown() then
+                child.filter = "TEMP"
+                child:SetScript("OnAttributeChanged", function(self, attribute, value)
+                    if attribute == "target-slot" then
+                        PPB:UpdateTempEnchant(self, value)
+                        if IsClassic then
+                            self.updateRequired = PPB:GetTime()
+                        end
+                    end
+                end)
+                child:SetScript("OnUpdate", function(self, elapsed)
+                    PPB:UpdateTime(self, elapsed)
+                end)
+            end
+        elseif name == "includeWeapons" and data == 0 then
+            PPB:HideAllWeaponBuffs()
+        end
+    end
+end
+
+function PPB:UpdateBuff(child, index)
+    local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), child.filter)
+    if name then
+        self:UpdateAura(child, icon, count, eTime)
+    end
+end
+
+function PPB:UpdateTempEnchant(child, slotid)
+    local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
+
+    local icon, count, eTime = nil, 0, 0
+    if (slotid == 16) and hasMainHandEnchant then
+        icon = GetInventoryItemTexture("player", slotid)
+        count = mainHandCharges or 0
+        eTime = (PPB:GetTime() + (mainHandExpiration / 1000)) or 0
+    elseif (slotid == 17) and hasOffHandEnchant then
+        icon = GetInventoryItemTexture("player", slotid)
+        count = offHandCharges or 0
+        eTime = (PPB:GetTime() + (offHandExpiration / 1000)) or 0
+    end
+
+    if icon then
+        self:UpdateAura(child, icon, count, eTime)
+    end
+end
+
+function PPB:UpdateDebuff(child, index)
+    local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), child.filter)
+    if name then
+        self:UpdateAura(child, icon, count, eTime)
+        -- Set color of debuff border based on dispel class.
+        local debuffSlot = _G[child:GetName().."Border"]
+        local color = DebuffTypeColor["none"]
+        if ( debuffSlot ) then
+            if ( dType ) then
+                color = DebuffTypeColor[dType];
+                if ( ENABLE_COLORBLIND_MODE == "1" ) then
+                    child.symbol:Show();
+                    child.symbol:SetText(DebuffTypeSymbol[debuffType] or "")
+                else
+                    child.symbol:Hide()
+                end
+            else
+                child.symbol:Hide()
+                color = DebuffTypeColor["none"]
+            end
+            debuffSlot:SetVertexColor(color.r, color.g, color.b)
+        else
+            color = DebuffTypeColor["none"]
+            debuffSlot:SetVertexColor(color.r, color.g, color.b)
+        end
+    end
+end
+
+function PPB:UpdateAura(child, icon, count, eTime)
+    local currentTime = PPB:GetTime()
+    child.lastUpdate = currentTime
+    local ic = _G[child:GetName().."Icon"]
+    if ic then
+        ic:SetTexture(icon)
+        ic:Show()
+    end
+    PPB:SetCountText(child, count)
+    child.eTime = eTime or 0
+    local timeLeft = child.eTime - currentTime
+    child.timeLeft = timeLeft
+    if settings.showOriginalTextTimer then
+        PPB:SetTimeleftText(child, timeLeft)
+    else
+        PPB:SetTimeleftText(child, 0)
+    end
+    if settings.showNativeCooldown then
+        PPB:SetCoolDown(child, eTime, timeLeft)
+    else
+        PPB:SetCoolDown(child, 0, 0)
+    end
+    PPB:SetAuraAlpha(child, timeLeft)
+end
+
+function PPB:UpdateTime(child, elapsed)
+    local currentTime = PPB:GetTime()
+    if IsClassic then
+        if child.filter == "TEMP" and child.updateRequired then
+            if child.updateRequired + 0.5 < currentTime then
+                PPB:UpdateTempEnchant(child, child:GetAttribute("target-slot"))
+                child.updateRequired = false
+            end
+        end
+    end
+
+    child.timeLeft = child.timeLeft or 0
+    local timeLeft = child.timeLeft - elapsed
+    child.timeLeft = timeLeft
+
+    child.lastUpdate = child.lastUpdate or 0
+    if child.lastUpdate + 0.1 > currentTime then
+        return -- save some cpu time
+    end
+
+    if settings.showOriginalTextTimer then
+        PPB:SetTimeleftText(child, timeLeft)
+    else
+        PPB:SetTimeleftText(child, 0)
+    end
+    if settings.showNativeCooldown then
+        PPB:SetCoolDown(child, child.eTime, timeLeft)
+    else
+        PPB:SetCoolDown(child, 0, 0)
+    end
+    PPB:SetAuraAlpha(child, timeLeft)
+
+    child.lastUpdate = currentTime
 end
 
 function PPB:SetHeaderAttribute(frame, filter, template)
 
+    frame.filter = filter
     frame:SetAttribute("unit", "player")
     frame:SetAttribute("template", template)
+    if filter == "HELPFUL" then
+        frame:SetAttribute("weaponTemplate", "PPB_TempEnchantButtonTemplate")
+    end
     frame:SetAttribute("filter", filter);
     frame:SetAttribute("minWidth", 0.1);
     frame:SetAttribute("minHeight", 0.1);
@@ -768,7 +907,7 @@ function PPB:SetHeaderAttribute(frame, filter, template)
     frame:SetAttribute("sortDirection", "+"); -- - to reverse
 end
 
-local lastUpdate = 0
+-- Mostly taken from BuffFrame_OnUpdate Blizzard function to reproduce alpha cycle
 function PPB:Update(self, elapsed)
     if not initialized then
         return
@@ -776,12 +915,6 @@ function PPB:Update(self, elapsed)
 
     if not settings.enabled then
         return
-    end
-
-    if ( self.BuffFrameUpdateTime > 0 ) then
-        self.BuffFrameUpdateTime = self.BuffFrameUpdateTime - elapsed;
-    else
-        self.BuffFrameUpdateTime = self.BuffFrameUpdateTime + TOOLTIP_UPDATE_TIME;
     end
 
     self.BuffFrameFlashTime = self.BuffFrameFlashTime - elapsed;
@@ -804,15 +937,6 @@ function PPB:Update(self, elapsed)
         self.BuffAlphaValue = self.BuffFrameFlashTime / BUFF_FLASH_TIME_ON;
     end
     self.BuffAlphaValue = (self.BuffAlphaValue * (1 - BUFF_MIN_ALPHA)) + BUFF_MIN_ALPHA;
-
-    local currentTime = self:GetTime()
-    if lastUpdate + 0.05 > currentTime then
-        return
-    end
-
-    self:UpdateAllAura()
-
-    lastUpdate = currentTime
 end
 
 function PPB:SetTimeleftText(button, timeLeft)
@@ -859,125 +983,6 @@ function PPB:SetAuraAlpha(buff, timeLeft)
     end
 end
 
-function PPB:UpdateAllAura()
-    local currentTime = GetTime()
-
-    for i = 1, BUFF_MAX_DISPLAY do
-        local child = PPB_Buffs:GetAttribute("child" .. i)
-        if child and child:IsShown() then
-            child.filter = "HELPFUL"
-            local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), "HELPFUL")
-            local ic = _G[child:GetName().."Icon"]
-            if ic then
-                ic:SetTexture(icon)
-                ic:Show()
-            end
-            self:SetCountText(child, count)
-            local timeLeft = (eTime or 0) - currentTime
-            if settings.showOriginalTextTimer then
-                self:SetTimeleftText(child, timeLeft)
-            else
-                self:SetTimeleftText(child, 0)
-            end
-            if settings.showNativeCooldown then
-                self:SetCoolDown(child, eTime, timeLeft)
-            else
-                self:SetCoolDown(child, 0, 0)
-            end
-            self:SetAuraAlpha(child, timeLeft)
-        end
-    end
-
-    if settings.weaponBuff then
-        hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
-        for i = 1, 2 do
-            local child = PPB_Buffs:GetAttribute("tempEnchant" .. i)
-            if child and child:IsShown() then
-                local slotid = child:GetAttribute("target-slot")
-                child.filter = "TEMP"
-
-                local eTime, count = 0, 0
-                if (slotid == 16) and hasMainHandEnchant then
-                    count = mainHandCharges
-                    eTime = currentTime + (mainHandExpiration / 1000)
-                end
-                if (slotid == 17) and hasOffHandEnchant then
-                    count = offHandCharges
-                    eTime = currentTime + (offHandExpiration / 1000)
-                end
-                self:SetCountText(child, count)
-                local timeLeft = (eTime or 0) - currentTime
-                if settings.showOriginalTextTimer then
-                    self:SetTimeleftText(child, timeLeft)
-                else
-                    self:SetTimeleftText(child, 0)
-                end
-                if settings.showNativeCooldown then
-                    self:SetCoolDown(child, eTime, timeLeft)
-                else
-                    self:SetCoolDown(child, 0, 0)
-                end
-                self:SetAuraAlpha(child, timeLeft)
-            end
-        end
-    end
-
-    for i = 1, DEBUFF_MAX_DISPLAY do
-        local child = PPB_Debuffs:GetAttribute("child" .. i)
-        if child and child:IsShown() then
-            child.filter = "HARMFUL"
-            local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), "HARMFUL")
-            local ic = _G[child:GetName().."Icon"]
-            if ic then
-                ic:SetTexture(icon)
-                ic:Show()
-            end
-            self:SetCountText(child, count)
-            local timeLeft = (eTime or 0) - currentTime
-            if settings.showOriginalTextTimer then
-                self:SetTimeleftText(child, timeLeft)
-            else
-                self:SetTimeleftText(child, 0)
-            end
-            if settings.showNativeCooldown then
-                self:SetCoolDown(child, eTime, timeLeft)
-            else
-                self:SetCoolDown(child, 0, 0)
-            end
-            self:SetAuraAlpha(child, timeLeft)
-        end
-    end
-end
-
-
-function PPB:HideAllAura()
-    local currentTime = GetTime()
-
-    for i = 1, BUFF_MAX_DISPLAY do
-        local child = PPB_Buffs:GetAttribute("child" .. i)
-        if child and child:IsShown() then
-            child:Hide()
-        end
-    end
-
-    if settings.weaponBuff then
-        for i = 1, 2 do
-            local child = PPB_Buffs:GetAttribute("tempEnchant" .. i)
-            if child and child:IsShown() then
-                child:Hide()
-            end
-        end
-    end
-
-    for i = 1, DEBUFF_MAX_DISPLAY do
-        local child = PPB_Debuffs:GetAttribute("child" .. i)
-        if child and child:IsShown() then
-            child:Hide()
-        end
-    end
-end
-
-
 function PPB:SetCoolDown(buff, eTime, timeLeft)
     local cooldownFrame = _G[buff:GetName().."Cooldown"];
     if not cooldownFrame then
@@ -988,6 +993,7 @@ function PPB:SetCoolDown(buff, eTime, timeLeft)
         cooldownFrame:SetFrameStrata(buff:GetFrameStrata())
         cooldownFrame:SetAllPoints(buff)
         cooldownFrame:SetReverse(true)
+        buff.CoolDownIsRunning = false
     end
 
     if eTime and timeLeft > 0 then
@@ -1000,132 +1006,6 @@ function PPB:SetCoolDown(buff, eTime, timeLeft)
         CooldownFrame_Set(cooldownFrame, 0, 0, 0)
         cooldownFrame:Hide()
         buff.CoolDownIsRunning = false
-    end
-end
-
-function PPB:UpdateBuffs(header)
-    local currentTime = GetTime()
-    for i = 1, BUFF_MAX_DISPLAY do
-        local child = header:GetAttribute("child" .. i)
-        if child and child:IsShown() then
-            child.filter = "HELPFUL"
-            local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), "HELPFUL")
-            local ic = _G[child:GetName().."Icon"]
-            if ic then
-                ic:SetTexture(icon)
-                ic:Show()
-            end
-            self:SetCountText(child, count)
-            local timeLeft = (eTime or 0) - currentTime
-            if settings.showOriginalTextTimer then
-                self:SetTimeleftText(child, timeLeft)
-            else
-                self:SetTimeleftText(child, 0)
-            end
-            if settings.showNativeCooldown then
-                self:SetCoolDown(child, eTime, timeLeft)
-            else
-                self:SetCoolDown(child, 0, 0)
-            end
-        end
-    end
-
-    if settings.weaponBuff then
-        hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
-        for i = 1, 2 do
-            local child = header:GetAttribute("tempEnchant" .. i)
-            if child and child:IsShown() then
-                local slotid = child:GetAttribute("target-slot")
-                child.filter = "TEMP"
-
-                local eTime = 0
-                local count = 0
-                local icon = nil
-
-                if (slotid == 16) and hasMainHandEnchant then
-                    local id = GetInventorySlotInfo("MAINHANDSLOT")
-                    icon = GetInventoryItemTexture("player", id)
-                    count = mainHandCharges
-                    eTime = mainHandExpiration
-                end
-                if (slotid == 17) and hasOffHandEnchant then
-                    local id = GetInventorySlotInfo("SECONDARYHANDSLOT")
-                    icon = GetInventoryItemTexture("player", id)
-                    count = offHandCharges
-                    eTime = offHandExpiration
-                end
-
-                if icon then
-                    local ic = _G[child:GetName().."Icon"]
-                    if ic then
-                        ic:SetTexture(icon)
-                        ic:Show()
-                    end
-                end
-                self:SetCountText(child, count)
-
-                local timeLeft = (eTime or 0) - currentTime
-                if settings.showOriginalTextTimer then
-                    self:SetTimeleftText(child, timeLeft)
-                else
-                    self:SetTimeleftText(child, 0)
-                end
-                if settings.showNativeCooldown then
-                    self:SetCoolDown(child, eTime, timeLeft)
-                else
-                    self:SetCoolDown(child, 0, 0)
-                end
-            end
-        end
-    end
-end
-
-function PPB:UpdateDebuffs(header)
-    local currentTime = GetTime()
-    for i = 1, DEBUFF_MAX_DISPLAY do
-        local child = header:GetAttribute("child" .. i)
-        if child and child:IsShown() then
-            child.filter = "HARMFUL"
-            local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), "HARMFUL")
-            local ic = _G[child:GetName().."Icon"]
-            if ic then
-                ic:SetTexture(icon)
-                ic:Show()
-            end
-            self:SetCountText(child, count)
-            -- Set color of debuff border based on dispel class.
-            local debuffSlot = _G[child:GetName().."Border"]
-            local color = DebuffTypeColor["none"]
-            if ( debuffSlot ) then
-                if ( dType ) then
-                    color = DebuffTypeColor[dType];
-                    if ( ENABLE_COLORBLIND_MODE == "1" ) then
-                        child.symbol:Show();
-                        child.symbol:SetText(DebuffTypeSymbol[debuffType] or "")
-                    else
-                        child.symbol:Hide()
-                    end
-                else
-                    child.symbol:Hide()
-                    color = DebuffTypeColor["none"]
-                end
-                debuffSlot:SetVertexColor(color.r, color.g, color.b)
-            else
-                color = DebuffTypeColor["none"]
-                debuffSlot:SetVertexColor(color.r, color.g, color.b)
-            end
-            local timeLeft = (eTime or 0) - currentTime
-            if settings.showOriginalTextTimer then
-                self:SetTimeleftText(child, timeLeft)
-            else
-                self:SetTimeleftText(child, 0)
-            end
-            if settings.showNativeCooldown then
-                self:SetCoolDown(child, eTime, timeLeft)
-            else
-                self:SetCoolDown(child, 0, 0)
-            end
-        end
     end
 end
 
@@ -1169,18 +1049,8 @@ function PPB:GetStringTime(timenum)
     end
 
     if (days > 0) then
-        --if (settings.showSecond ~= 1) then
-        --    timestring = days.."d"..shours.."h"..sminutes.."m";
-        --else
-        --    timestring = days..":"..shours..":"..sminutes..":"..sseconds;
-        --end
         timestring = days.."d"..shours.."h";
     elseif (hours > 0) then
-        --if (settings.showSecond ~= 1) then
-        --    timestring = shours.."h "..sminutes.."m";
-        --else
-        --    timestring = shours..":"..sminutes..":"..sseconds;
-        --end
         timestring = shours.."h "..sminutes.."m";
     elseif (minutes > 0) then
         if settings.showSecond == 1 then
@@ -1190,8 +1060,10 @@ function PPB:GetStringTime(timenum)
         else
             timestring = sminutes.."m"; -- >10m
         end
-    else -- less than a minute
+    elseif (seconds > 0) then -- less than a minute
         timestring = sseconds.."s";
+    else
+        timestring = ""
     end
 
     return timestring;
