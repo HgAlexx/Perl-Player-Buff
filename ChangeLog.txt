@@ -1,4 +1,10 @@
-8.2._2019.09.04_beta - Septembr 04, 2019 by Leliel
+8.2.0_2019.09.15 - September 15, 2019 by Leliel
+* Big optimization pass
+* Few bug fixes
+* Some code cleanup
+
+
+8.2.0_2019.09.04_beta - September 04, 2019 by Leliel
 * Complete rewrite for retail 8.2.0 and classic 1.13.2 using SecureActionButtonTemplate
 
 

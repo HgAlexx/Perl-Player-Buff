@@ -38,7 +38,7 @@
 
     <Button name="PPB_BuffButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true">
         <Attributes>
-            <Attribute name="type" value="cancelaura" />
+            <Attribute name="type2" value="cancelaura" />
         </Attributes>
         <Scripts>
             <OnLoad>
@@ -75,7 +75,7 @@
         </Scripts>
     </Button>
 
-    <Button name="PPB_TempEnchantButtonTemplate" inherits="PPB_BuffButtonTemplate" virtual="true">
+    <Button name="PPB_TempEnchantButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true">
         <Layers>
             <Layer level="OVERLAY">
                 <Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border">
@@ -88,5 +88,13 @@
                 </Texture>
             </Layer>
         </Layers>
+        <Attributes>
+            <Attribute name="type2" value="cancelaura" />
+        </Attributes>
+        <Scripts>
+            <OnLoad>
+                self:RegisterForClicks("RightButtonUp");
+            </OnLoad>
+        </Scripts>
     </Button>
 </Ui>
