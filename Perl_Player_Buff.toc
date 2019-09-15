@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 11302
 ## Title: Perl Player Buff
 ## Notes: Displays buffs below the Player Frame
 ## Author: Leliel at EU-Eldre'Thalas
