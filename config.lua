@@ -3,8 +3,6 @@
 local addonName, ns = ...
 addonNameProper = string.gsub(addonName, "_", " ");
 
-local settings = ns.settings
-
 -- The Settings Frame
 PPB_SettingsFrame = CreateFrame("FRAME", addonName .. "Settings", UIParent);
 PPB_SettingsFrame.name = addonNameProper;
