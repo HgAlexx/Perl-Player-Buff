@@ -3,7 +3,6 @@
 
     Perl Player Buff is now maintained by Leliel AKA :
     - mZHg at curseforge.com
-    - Leliel, Yui, Neon, Sahaquiel at EU-Eldre'Thalas (retail)
 
     Thanks to sigg for his tutorial on SecureAura Template
     https://www.wowinterface.com/forums/showthread.php?t=36117
@@ -766,33 +765,38 @@ end
 function PPB:UpdateBuff(child, index)
     local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), child.filter)
     if name then
-        self:UpdateAura(child, icon, count, eTime)
+        self:UpdateAura(child, name, icon, count, duration, eTime)
     end
 end
 
 function PPB:UpdateTempEnchant(child, slotid)
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
 
-    local icon, count, eTime = nil, 0, 0
+    local duration = 0
+    local name, icon, count, eTime = nil, nil, 0, 0
     if (slotid == 16) and hasMainHandEnchant then
+        name = GetSpellInfo(mainHandEnchantID)
         icon = GetInventoryItemTexture("player", slotid)
         count = mainHandCharges or 0
-        eTime = (PPB:GetTime() + (mainHandExpiration / 1000)) or 0
+        duration = (mainHandExpiration / 1000)
+        eTime = (PPB:GetTime() + duration) or 0
     elseif (slotid == 17) and hasOffHandEnchant then
+        name = GetSpellInfo(offHandEnchantId)
         icon = GetInventoryItemTexture("player", slotid)
         count = offHandCharges or 0
-        eTime = (PPB:GetTime() + (offHandExpiration / 1000)) or 0
+        duration = (offHandExpiration / 1000)
+        eTime = (PPB:GetTime() + duration) or 0
     end
 
     if icon then
-        self:UpdateAura(child, icon, count, eTime)
+        self:UpdateAura(child, name, icon, count, duration, eTime)
     end
 end
 
 function PPB:UpdateDebuff(child, index)
     local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), child.filter)
     if name then
-        self:UpdateAura(child, icon, count, eTime)
+        self:UpdateAura(child, name, icon, count, duration, eTime)
         -- Set color of debuff border based on dispel class.
         local debuffSlot = _G[child:GetName().."Border"]
         local color = DebuffTypeColor["none"]
@@ -817,7 +821,7 @@ function PPB:UpdateDebuff(child, index)
     end
 end
 
-function PPB:UpdateAura(child, icon, count, eTime)
+function PPB:UpdateAura(child, name, icon, count, duration, eTime)
     local currentTime = PPB:GetTime()
     child.lastUpdate = currentTime
     local ic = _G[child:GetName().."Icon"]
@@ -826,6 +830,8 @@ function PPB:UpdateAura(child, icon, count, eTime)
         ic:Show()
     end
     PPB:SetCountText(child, count)
+    child.buffName = name
+    child.buffDuration = duration
     child.eTime = eTime or 0
     local timeLeft = child.eTime - currentTime
     child.timeLeft = timeLeft
@@ -835,7 +841,8 @@ function PPB:UpdateAura(child, icon, count, eTime)
         PPB:SetTimeleftText(child, 0)
     end
     if settings.showNativeCooldown then
-        PPB:SetCoolDown(child, eTime, timeLeft)
+        PPB:SetCoolDown(child, 0, 0)
+        PPB:SetCoolDown(child, eTime, duration)
     else
         PPB:SetCoolDown(child, 0, 0)
     end
@@ -846,15 +853,14 @@ function PPB:UpdateTime(child, elapsed)
     local currentTime = PPB:GetTime()
     if IsClassic then
         if child.filter == "TEMP" and child.updateRequired then
-            if child.updateRequired + 0.5 < currentTime then
+            if child.updateRequired + 1 < currentTime then
                 PPB:UpdateTempEnchant(child, child:GetAttribute("target-slot"))
-                child.updateRequired = false
+                child.updateRequired = currentTime
             end
         end
     end
 
-    child.timeLeft = child.timeLeft or 0
-    local timeLeft = child.timeLeft - elapsed
+    local timeLeft = child.eTime - currentTime
     child.timeLeft = timeLeft
 
     child.lastUpdate = child.lastUpdate or 0
@@ -868,7 +874,7 @@ function PPB:UpdateTime(child, elapsed)
         PPB:SetTimeleftText(child, 0)
     end
     if settings.showNativeCooldown then
-        PPB:SetCoolDown(child, child.eTime, timeLeft)
+        PPB:SetCoolDown(child, child.eTime, child.buffDuration)
     else
         PPB:SetCoolDown(child, 0, 0)
     end
@@ -983,7 +989,7 @@ function PPB:SetAuraAlpha(buff, timeLeft)
     end
 end
 
-function PPB:SetCoolDown(buff, eTime, timeLeft)
+function PPB:SetCoolDown(buff, eTime, duration)
     local cooldownFrame = _G[buff:GetName().."Cooldown"];
     if not cooldownFrame then
         cooldownFrame = CreateFrame("Cooldown", "$parentCooldown", buff, "CooldownFrameTemplate")
@@ -996,9 +1002,11 @@ function PPB:SetCoolDown(buff, eTime, timeLeft)
         buff.CoolDownIsRunning = false
     end
 
-    if eTime and timeLeft > 0 then
+    if eTime and duration > 0 then
+        local startTime
+        startTime = eTime - duration
         if not buff.CoolDownIsRunning then
-            CooldownFrame_Set(cooldownFrame, eTime - timeLeft, timeLeft, 1)
+            CooldownFrame_Set(cooldownFrame, startTime, duration, 1)
             cooldownFrame:Show()
             buff.CoolDownIsRunning = true
         end
