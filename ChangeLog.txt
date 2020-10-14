@@ -1,4 +1,9 @@
-### 8.3.7_2020.08.07 / 1.13.5_2020.08.07
+9.0.1_2020.10.14 / 1.13.5_2020.10.14
+
+* Update for Shadowlands API changes (backdrop)
+
+
+8.3.7_2020.08.07 / 1.13.5_2020.08.07
 
 * Fix issue with native cooldown / OmniCC
 

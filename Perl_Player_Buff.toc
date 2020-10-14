@@ -1,4 +1,4 @@
-## Interface: 80300
+## Interface: 90001
 ## Title: Perl Player Buff
 ## Notes: Displays buffs below the Player Frame
 ## Author: mZHg at curseforge.com

@@ -4,15 +4,10 @@ local addonName, ns = ...
 addonNameProper = string.gsub(addonName, "_", " ");
 
 -- The Settings Frame
-PPB_SettingsFrame = CreateFrame("FRAME", addonName .. "Settings", UIParent);
+PPB_SettingsFrame = CreateFrame("FRAME", addonName .. "Settings", UIParent, BackdropTemplateMixin and "BackdropTemplate");
 PPB_SettingsFrame.name = addonNameProper;
-PPB_SettingsFrame:SetBackdrop({
-    bgFile = "Interface/RAIDFRAME/UI-RaidFrame-GroupBg",
-    edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-    tile = false, edgeSize = 16,
-    insets = { left = 4, right = 4, top = 4, bottom = 4 }
-});
-PPB_SettingsFrame:SetBackdropColor(0, 0, 0, 1);
+PPB_SettingsFrame:SetBackdrop(BACKDROP_TOOLTIP_12_12_4444);
+PPB_SettingsFrame:SetBackdropColor(.1,.1,.1,.3)
 PPB_SettingsFrame.refresh = function()
     PPB_SettingsFrame:Refresh()
 end
