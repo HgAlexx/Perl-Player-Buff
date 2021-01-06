@@ -470,11 +470,15 @@ function PPB:ADDON_LOADED(event, addon)
     Perl_Player_Buff_Settings = Perl_Player_Buff_Settings or {}
     Perl_Player_Buff_Settings = setmetatable(Perl_Player_Buff_Settings, { __index = defaultSettings })
 
-    local _, build, toc = GetBuildInfo()
+    local _, build, _, interfaceVersion = GetBuildInfo()
     local currBuild, prevBuild = tonumber(build), Perl_Player_Buff_Settings.build
 
-    if UnitDefense and not UpdateWindow then
+    if interfaceVersion >= 10000 and interfaceVersion < 20000 then
         IsClassic = true
+        --elseif interfaceVersion >= 20000 and interfaceVersion < 30000 then
+        --    Utility.IsTBC = true
+    elseif interfaceVersion >= 90000 then
+        IsClassic = false
     end
 
     -- load some settings only if we are running the same build
@@ -537,6 +541,8 @@ function PPB:PLAYER_LOGIN()
 
     self:CreateFrames()
 
+    self:UpdateFixAnchorLocation()
+
     initialized = true
 
     if BuffFrame then
@@ -558,9 +564,6 @@ function PPB:PLAYER_LOGIN()
     end
 
     self:Print("Loaded")
-    if IsClassic then
-        self:Print("Welcome back to Classic!")
-    end
 end
 
 function PPB:PLAYER_LOGOUT()
