@@ -1,7 +1,9 @@
+local addonName, ns = ...;
 
+local Core = ns.Core
+local Config = ns.Config
 
-local addonName, _ = ...;
-addonNameProper = string.gsub(addonName, "_", " ");
+local addonNameProper = string.gsub(addonName, "_", " ");
 
 local PPB_DataBroker = LibStub:GetLibrary("LibDataBroker-1.1")
 local PPB_DataObject = PPB_DataBroker:NewDataObject(addonName, {
@@ -11,9 +13,9 @@ local PPB_DataObject = PPB_DataBroker:NewDataObject(addonName, {
     OnClick = function(clickedframe, button)
         if button == 'RightButton' then
 
-            if PPB_SettingsFrame then
-                InterfaceOptionsFrame_OpenToCategory(PPB_SettingsFrame)
-                InterfaceOptionsFrame_OpenToCategory(PPB_SettingsFrame)
+            if Config.frame then
+                InterfaceOptionsFrame_OpenToCategory(Config.frame)
+                InterfaceOptionsFrame_OpenToCategory(Config.frame)
             end
 
         elseif button == 'LeftButton' then
@@ -31,6 +33,6 @@ local PPB_DataObject = PPB_DataBroker:NewDataObject(addonName, {
         tooltip:AddLine(PPBEC_Localization["PPBEC/ToolTip/LeftButtonDesc"])
         tooltip:AddLine(PPBEC_Localization["PPBEC/ToolTip/RightButtonDesc"])
         tooltip:AddLine('')
-        tooltip:AddLine(string.format(PPBEC_Localization["FT_Version"], Perl_Player_Buff_Version))
+        tooltip:AddLine(string.format(PPBEC_Localization["FT_Version"], Core.Version or ""))
     end,
 })

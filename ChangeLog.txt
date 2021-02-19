@@ -1,15 +1,18 @@
-9.0.2_2021.01.06 / 1.13.6_2021.01.06
+9.0.2_2021.02.19_Beta / 1.13.6_2021.02.19_Beta
++ Add settings to change anchor point
+* Rewrite of the core
+* Rewrite of the config panel
 
+
+9.0.2_2021.01.06 / 1.13.6_2021.01.06
 * Fix buff frame position not properly updating when special class resource bar is active
 
 
 9.0.1_2020.10.14 / 1.13.5_2020.10.14
-
 * Update for Shadowlands API changes (backdrop)
 
 
 8.3.7_2020.08.07 / 1.13.5_2020.08.07
-
 * Fix issue with native cooldown / OmniCC
 
 
