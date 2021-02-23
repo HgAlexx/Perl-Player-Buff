@@ -1,3 +1,8 @@
+9.0.2_2021.02.23_Beta / 1.13.6_2021.02.23_Beta
+* Fix small issue with weapon buff duration and cooldown
+* Fix issue with showsecond setting
+
+
 9.0.2_2021.02.19_Beta / 1.13.6_2021.02.19_Beta
 + Add settings to change anchor point
 * Rewrite of the core

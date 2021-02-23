@@ -41,6 +41,8 @@ Core.Debuffs = nil
 Core.FixAnchor = nil
 Core.BuffFrame = nil
 
+Core.WeaponBuffs = {}
+
 local PPB = CreateFrame("Frame")
 Core.PPB = PPB
 
@@ -733,23 +735,42 @@ function Core:UpdateBuff(child, index)
     end
 end
 
+function Core:GetWeaponBuffInfo(id, expiration)
+    local d = (expiration / 1000)
+    if not Core.WeaponBuffs[id] then
+        local n = GetSpellInfo(id)
+        Core.WeaponBuffs[id] = {
+            name = n,
+            duration = d
+        }
+    end
+    -- store the greatest duration
+    if Core.WeaponBuffs[id].duration < d then
+        Core.WeaponBuffs[id].duration = d
+    end
+
+    return Core.WeaponBuffs[id]
+end
+
 function Core:UpdateTempEnchant(child, slotid)
     local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId = GetWeaponEnchantInfo()
 
     local duration = 0
     local name, icon, count, eTime = nil, nil, 0, 0
     if (slotid == 16) and hasMainHandEnchant then
-        name = GetSpellInfo(mainHandEnchantID)
+        local buffInfo = Core:GetWeaponBuffInfo(mainHandEnchantID, mainHandExpiration)
+        name = buffInfo.name
         icon = GetInventoryItemTexture("player", slotid)
         count = mainHandCharges or 0
-        duration = (mainHandExpiration / 1000)
-        eTime = (Utility.GetTime() + duration) or 0
+        duration = buffInfo.duration
+        eTime = (Utility.GetTime() + (mainHandExpiration / 1000)) or 0
     elseif (slotid == 17) and hasOffHandEnchant then
-        name = GetSpellInfo(offHandEnchantId)
+        local buffInfo = Core:GetWeaponBuffInfo(offHandEnchantId, offHandExpiration)
+        name = buffInfo.name
         icon = GetInventoryItemTexture("player", slotid)
         count = offHandCharges or 0
-        duration = (offHandExpiration / 1000)
-        eTime = (Utility.GetTime() + duration) or 0
+        duration = buffInfo.duration
+        eTime = (Utility.GetTime() + (offHandExpiration / 1000)) or 0
     end
 
     if icon then
@@ -795,7 +816,9 @@ function Core:UpdateAura(child, name, icon, count, duration, eTime)
     end
     Core:SetCountText(child, count)
     child.buffName = name
-    child.buffDuration = duration
+    if not child.buffDuration or child.buffDuration < duration then
+        child.buffDuration = duration
+    end
     child.eTime = eTime or 0
     local timeLeft = child.eTime - currentTime
     child.timeLeft = timeLeft

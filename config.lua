@@ -103,7 +103,7 @@ frame:SetScript("OnShow", function()
                     self.Text:SetText("Only show seconds under 10 minutes")
                 end
                 if value >= 1 and value <= 3 then
-                    Core:ChangeSettings_ShowSecond(value)
+                    Core:ChangeSettings_ShowSecond(value-1)
                 end
             end
         end)
