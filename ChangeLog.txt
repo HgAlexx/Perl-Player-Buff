@@ -1,3 +1,11 @@
+9.0.5_2021.03.10 / 1.13.6_2021.03.10
++ Add settings to change anchor point of the buff and debuff frames
+* Rewrite of the core
+* Rewrite of the config panel
+* Fix small issue with weapon buff duration and cooldown
+* Various fixes and improvements
+
+
 9.0.2_2021.02.23_Beta / 1.13.6_2021.02.23_Beta
 * Fix small issue with weapon buff duration and cooldown
 * Fix issue with showsecond setting
