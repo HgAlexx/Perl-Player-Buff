@@ -1,3 +1,8 @@
+1.13.7_2021.05.12 / 2.5.1_2021.05.12
+* Update Classic toc version
+* Preparation for TBC
+
+
 9.0.5_2021.03.10 / 1.13.6_2021.03.10
 + Add settings to change anchor point of the buff and debuff frames
 * Rewrite of the core

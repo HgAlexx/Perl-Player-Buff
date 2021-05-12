@@ -16,14 +16,14 @@ do
 
     Utility.Mode = 1
     Utility.IsClassic = false
-    --Utility.IsTBC = false
+    Utility.IsTBC = false
     Utility.IsRetail = false
 
     local _, _, _, interfaceVersion = GetBuildInfo()
-    if interfaceVersion >= 10000 and interfaceVersion < 20000 then
+    if interfaceVersion >= 10000 and interfaceVersion < 20500 then
         Utility.IsClassic = true
-    --elseif interfaceVersion >= 20000 and interfaceVersion < 30000 then
-    --    Utility.IsTBC = true
+    elseif interfaceVersion >= 20500 and interfaceVersion < 30000 then
+        Utility.IsTBC = true
     elseif interfaceVersion >= 90000 then
         Utility.IsRetail = true
     end
