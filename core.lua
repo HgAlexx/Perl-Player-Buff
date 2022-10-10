@@ -451,7 +451,7 @@ function Core:SpecialBarOffset()
         Perl_Player_Set_Show_Class_Resource_Frame = Core.PPB_Perl_Player_Set_Show_Class_Resource_Frame;
     end;
 
-    if not Utility.IsClassic and WatchSpec then
+    if Utility.IsRetail and WatchSpec then
         PPB:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
     end;
 end
