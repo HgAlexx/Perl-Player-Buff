@@ -1,9 +1,15 @@
+### 60
+
+* Moved from Beta to Release
+* Ready for Dragonflight (v10.0.0)
+
+
 ### 59_Beta
 
 * Added support for Wrath
 * Added support for multi-toc
 * Added lib to repo and removed from curse auto-build
-* Changed versioning scheme: git tags wil now only contain an incremental version number, with an optional _Beta suffix
+* Changed versioning scheme: git tags will now only contain an incremental version number, with an optional _Beta suffix
 
 
 ### 1.13.7_2021.05.12 / 2.5.1_2021.05.12

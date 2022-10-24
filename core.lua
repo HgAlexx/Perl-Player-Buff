@@ -19,6 +19,10 @@ local addonName, ns = ...
 local Utility = ns.Utility
 local Const = ns.Const
 
+-- removed in wow api >= 10.0.0
+local BUFF_FLASH_TIME_ON = BUFF_FLASH_TIME_ON or 0.75;
+local BUFF_FLASH_TIME_OFF = BUFF_FLASH_TIME_OFF or 0.75;
+local BUFF_MIN_ALPHA = BUFF_MIN_ALPHA or 0.3;
 
 -- Local namespace
 local Core = {}
