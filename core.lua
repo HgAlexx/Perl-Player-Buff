@@ -141,9 +141,15 @@ function Core:UpdateEnabled()
                 Core.FixAnchor:Hide()
             end
             if BuffFrame then
-                BuffFrame_OnLoad(BuffFrame)
-                BuffFrame:Show()
-                BuffFrame_UpdatePositions()
+                if Utility.IsRetail then
+                    BuffFrame:AuraFrame_OnLoad()
+                    BuffFrame:OnLoad()
+                    BuffFrame:Show()
+                else
+                    BuffFrame_OnLoad(BuffFrame)
+                    BuffFrame:Show()
+                    BuffFrame_UpdatePositions()
+                end
             end
         end
     end

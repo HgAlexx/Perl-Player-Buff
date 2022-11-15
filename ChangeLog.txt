@@ -1,3 +1,8 @@
+### 61
+
+* Fix issue related to API changes
+
+
 ### 60
 
 * Moved from Beta to Release
