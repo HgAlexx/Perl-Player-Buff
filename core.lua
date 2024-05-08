@@ -20,9 +20,24 @@ local Utility = ns.Utility
 local Const = ns.Const
 
 -- removed in wow api >= 10.0.0
-local BUFF_FLASH_TIME_ON = BUFF_FLASH_TIME_ON or 0.75;
-local BUFF_FLASH_TIME_OFF = BUFF_FLASH_TIME_OFF or 0.75;
-local BUFF_MIN_ALPHA = BUFF_MIN_ALPHA or 0.3;
+local BUFF_FLASH_TIME_ON = BUFF_FLASH_TIME_ON or 0.75
+local BUFF_FLASH_TIME_OFF = BUFF_FLASH_TIME_OFF or 0.75
+local BUFF_MIN_ALPHA = BUFF_MIN_ALPHA or 0.3
+
+local C_UnitAuras_UnitAura = nil
+if UnitAura then
+    -- removed in wow api >= 10.2.5
+    C_UnitAuras_UnitAura = UnitAura
+else
+    C_UnitAuras_UnitAura = function(unitToken, index, filter)
+        local auraData = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter);
+        if not auraData then
+            return nil;
+        end
+        -- Old names and order: name, icon, count, dType, duration, eTime
+        return auraData.name, auraData.icon, auraData.applications, auraData.dispelName, auraData.duration, auraData.expirationTime
+    end
+end
 
 -- Local namespace
 local Core = {}
@@ -36,9 +51,9 @@ Core.playerClass = nil
 Core.specialBar = nil
 Core.currentScale = 1
 
-Core.BuffFrameFlashTime = 0;
-Core.BuffFrameFlashState = 1;
-Core.BuffAlphaValue = 1;
+Core.BuffFrameFlashTime = 0
+Core.BuffFrameFlashState = 1
+Core.BuffAlphaValue = 1
 
 Core.Buffs = nil
 Core.Debuffs = nil
@@ -100,11 +115,14 @@ function PPB:PLAYER_LOGIN()
 
     Core.initialized = true
 
-    -- TODO: move into enabled handler
-    if BuffFrame then
-        BuffFrame:UnregisterAllEvents()
-        BuffFrame:Hide()
-    end
+    Core:UpdateEnabled()
+
+    ---- TODO: move into enabled handler
+    --if Core.settings.enabled and BuffFrame then
+    --    -- BuffFrame:UnregisterAllEvents()
+    --    BuffFrame:UnregisterEvent("UNIT_AURA")
+    --    BuffFrame:Hide()
+    --end
 
     Utility.Print(Core.Version, "Loaded!")
 end
@@ -127,30 +145,22 @@ end
     Update layout functions
 --]]
 function Core:UpdateEnabled()
-    if not InCombatLockdown() then
-        if Core.settings.enabled then
-            if Core.FixAnchor and not Core.FixAnchor:IsShown() then
-                Core.FixAnchor:Show()
-            end
-            if BuffFrame then
-                BuffFrame:UnregisterAllEvents()
-                BuffFrame:Hide()
-            end
-        else
-            if Core.FixAnchor and Core.FixAnchor:IsShown() then
-                Core.FixAnchor:Hide()
-            end
-            if BuffFrame then
-                if Utility.IsRetail then
-                    BuffFrame:AuraFrame_OnLoad()
-                    BuffFrame:OnLoad()
-                    BuffFrame:Show()
-                else
-                    BuffFrame_OnLoad(BuffFrame)
-                    BuffFrame:Show()
-                    BuffFrame_UpdatePositions()
-                end
-            end
+    if Core.settings.enabled then
+        if Core.FixAnchor and not Core.FixAnchor:IsShown() then
+            Core.FixAnchor:Show()
+        end
+        if BuffFrame then
+            -- BuffFrame:UnregisterAllEvents()
+            BuffFrame:UnregisterEvent("UNIT_AURA")
+            BuffFrame:Hide()
+        end
+    else
+        if Core.FixAnchor and Core.FixAnchor:IsShown() then
+            Core.FixAnchor:Hide()
+        end
+        if BuffFrame then
+            BuffFrame:Show()
+            BuffFrame:RegisterEvent("UNIT_AURA")
         end
     end
 end
@@ -321,7 +331,13 @@ function Core:SlashHandler(message, editbox)
     local _, _, cmd, args = string.find(message, "%s?(%w+)%s?(.*)")
 
     local i
-    if cmd == "offsetVertical" then
+
+    if cmd == "enabled" then
+        i = tonumber(args or Const.defaultSettings.enabled)
+        local b = (i == 1)
+        self:ChangeSettings_Enabled(b)
+
+    elseif cmd == "offsetVertical" then
         i = tonumber(args or Const.defaultSettings.offsetVertical)
         i = math.floor(i)
         self:ChangeSettings_OffsetVertical(i)
@@ -373,20 +389,20 @@ function Core:SlashHandler(message, editbox)
             self:ChangeSettings_Scaling(i)
         end
     else
-        self:Print("Usage: /ppb command <value>")
-        self:Print("/ppb enabled: 1 = enabled, 0 = disabled")
-        self:Print("/ppb showNativeCooldown: 1 = enabled, 0 = disabled")
-        self:Print("/ppb showOriginalTextTimer: 1 = enabled, 0 = disabled")
-        self:Print("/ppb showSecond: 0 = hide, 1 = show, 2 = show only under 10 minutes")
-        self:Print("/ppb weaponBuff: 1 = enabled, 0 = disabled")
-        self:Print("/ppb offsetVertical: any number")
-        self:Print("/ppb offsetHorizontal: any number")
-        self:Print("/ppb spacingVertical: any number")
-        self:Print("/ppb spacingHorizontal: any number")
-        self:Print("/ppb scaling: from 10 to 200 (%)")
-        self:Print("/ppb buffPerRow: from 1 to 40")
-        self:Print("/ppb maxNumberOfRow: from 1 to 40")
-        self:Print("If value is omitted, reset to default")
+        Utility.Print("Usage: /ppb command <value>")
+        Utility.Print("/ppb enabled: 1 = enabled, 0 = disabled")
+        Utility.Print("/ppb showNativeCooldown: 1 = enabled, 0 = disabled")
+        Utility.Print("/ppb showOriginalTextTimer: 1 = enabled, 0 = disabled")
+        Utility.Print("/ppb showSecond: 0 = hide, 1 = show, 2 = show only under 10 minutes")
+        Utility.Print("/ppb weaponBuff: 1 = enabled, 0 = disabled")
+        Utility.Print("/ppb offsetVertical: any number")
+        Utility.Print("/ppb offsetHorizontal: any number")
+        Utility.Print("/ppb spacingVertical: any number")
+        Utility.Print("/ppb spacingHorizontal: any number")
+        Utility.Print("/ppb scaling: from 10 to 200 (%)")
+        Utility.Print("/ppb buffPerRow: from 1 to 40")
+        Utility.Print("/ppb maxNumberOfRow: from 1 to 40")
+        Utility.Print("If value is omitted, reset to default")
     end
 end
 SLASH_PPB1 = "/ppb"
@@ -461,9 +477,11 @@ function Core:SpecialBarOffset()
         Perl_Player_Set_Show_Class_Resource_Frame = Core.PPB_Perl_Player_Set_Show_Class_Resource_Frame;
     end;
 
-    if Utility.IsRetail and WatchSpec then
-        PPB:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
-    end;
+    if WatchSpec then
+        if Utility.IsRetail or Utility.IsWLK or Utility.IsCataclysm then
+            PPB:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+        end
+    end
 end
 
 function Core:SetBuffScale()
@@ -739,7 +757,7 @@ function Core:HeaderAttributeChanged(name, data)
 end
 
 function Core:UpdateBuff(child, index)
-    local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), child.filter)
+    local name, icon, count, dType, duration, eTime = C_UnitAuras_UnitAura("player", child:GetID(), child.filter)
     if name then
         Core:UpdateAura(child, name, icon, count, duration, eTime)
     end
@@ -789,7 +807,7 @@ function Core:UpdateTempEnchant(child, slotid)
 end
 
 function Core:UpdateDebuff(child, index)
-    local name, icon, count, dType, duration, eTime = UnitAura("player", child:GetID(), child.filter)
+    local name, icon, count, dType, duration, eTime = C_UnitAuras_UnitAura("player", child:GetID(), child.filter)
     if name then
         Core:UpdateAura(child, name, icon, count, duration, eTime)
         -- Set color of debuff border based on dispel class.

@@ -42,7 +42,7 @@
         </Attributes>
         <Scripts>
             <OnLoad>
-                self:RegisterForClicks("RightButtonUp");
+                self:RegisterForClicks("RightButtonDown", "RightButtonUp");
             </OnLoad>
         </Scripts>
     </Button>
@@ -93,7 +93,7 @@
         </Attributes>
         <Scripts>
             <OnLoad>
-                self:RegisterForClicks("RightButtonUp");
+                self:RegisterForClicks("RightButtonDown", "RightButtonUp");
             </OnLoad>
         </Scripts>
     </Button>

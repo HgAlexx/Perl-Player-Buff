@@ -1,3 +1,9 @@
+### 64
+
+* Fix right click not cancelling aura on mouse up (now trigger on down and up)
+* Updated some code to latest wow API
+
+
 ### 63
 
 * Fix typo in Retail toc version :(
