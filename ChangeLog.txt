@@ -1,3 +1,8 @@
+### 65
+
+* Fixed wrong file name for Cataclysm toc file
+
+
 ### 64
 
 * Fix right click not cancelling aura on mouse up (now trigger on down and up)
