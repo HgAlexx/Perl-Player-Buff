@@ -238,13 +238,28 @@ end)
 
 Config.frame = frame
 
+local category = nil
+
+
+
+if Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory then
+    category = Settings.RegisterCanvasLayoutCategory(Config.frame, Config.frame.name)
+    Settings.RegisterAddOnCategory(category)
+else
+    InterfaceOptions_AddCategory(Config.frame)
+end
+
+Config.category = category
+
 function Config:HookPerlConfigToggle()
     if Perl_Config_Toggle then
         local o = Perl_Config_Toggle
         Perl_Config_Toggle = function()
             o()
             Perl_Config_Player_Buff_Display = function()
-                if PPB_SettingsFrame then
+                if Settings and Settings.OpenToCategory  then
+                    Settings.OpenToCategory(Config.category:GetID())
+                else
                     InterfaceOptionsFrame_OpenToCategory(Config.frame)
                     InterfaceOptionsFrame_OpenToCategory(Config.frame)
                 end
@@ -252,8 +267,6 @@ function Config:HookPerlConfigToggle()
         end
     end
 end
-
-InterfaceOptions_AddCategory(frame)
 
 -- Export
 ns.Config = Config
