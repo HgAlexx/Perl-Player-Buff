@@ -81,8 +81,11 @@ function PPB:ADDON_LOADED(event, addon)
     end
     self:UnregisterEvent("ADDON_LOADED")
 
-    Core.Version = GetAddOnMetadata(addonName, 'Version');
-
+    if C_AddOns and C_AddOns.GetAddOnMetadata then
+        Core.Version = C_AddOns.GetAddOnMetadata(addonName, 'Version');
+    else
+        Core.Version = GetAddOnMetadata(addonName, 'Version');
+    end
 
     -- load saved variables
     Perl_Player_Buff_Settings = setmetatable(Perl_Player_Buff_Settings or {}, { __index = Const.defaultSettings })
