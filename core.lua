@@ -157,6 +157,11 @@ function Core:UpdateEnabled()
             BuffFrame:UnregisterEvent("UNIT_AURA")
             BuffFrame:Hide()
         end
+        if DebuffFrame then
+            -- DebuffFrame:UnregisterAllEvents()
+            DebuffFrame:UnregisterEvent("UNIT_AURA")
+            DebuffFrame:Hide()
+        end
     else
         if Core.FixAnchor and Core.FixAnchor:IsShown() then
             Core.FixAnchor:Hide()
@@ -164,6 +169,10 @@ function Core:UpdateEnabled()
         if BuffFrame then
             BuffFrame:Show()
             BuffFrame:RegisterEvent("UNIT_AURA")
+        end
+        if DebuffFrame then
+            DebuffFrame:Show()
+            DebuffFrame:RegisterEvent("UNIT_AURA")
         end
     end
 end
