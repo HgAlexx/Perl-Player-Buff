@@ -1,3 +1,9 @@
+### 69
+
++ Added support for Mists of Pandaria
+* Updated TOC
+
+
 ### 68
 
 * Fixed native Debuff not being hidden

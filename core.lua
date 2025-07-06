@@ -490,7 +490,7 @@ function Core:SpecialBarOffset()
     end;
 
     if WatchSpec then
-        if Utility.IsRetail or Utility.IsWLK or Utility.IsCataclysm then
+        if Utility.IsRetail or Utility.IsWLK or Utility.IsCataclysm or Utility.IsMists then
             PPB:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
         end
     end
