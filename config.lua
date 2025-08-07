@@ -220,27 +220,12 @@ frame:SetScript("OnShow", function()
     Config.sliderMaxNumberOfRow:SetPoint("TOPLEFT", Config.sliderBuffPerRow, "BOTTOMLEFT", 0, -30)
     Config.sliderMaxNumberOfRow:SetValue(Core.settings.maxNumberOfRow)
 
-
-    frame:SetScript("OnEvent", function(self, event)
-        if event == "PLAYER_REGEN_DISABLED" then
-            --hpbutt:Disable()
-        else
-            --hpbutt:Enable()
-        end
-    end)
-    frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-    frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-
-    Config:HookPerlConfigToggle()
-
     frame:SetScript("OnShow", nil)
 end)
 
 Config.frame = frame
 
 local category = nil
-
-
 
 if Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory then
     category = Settings.RegisterCanvasLayoutCategory(Config.frame, Config.frame.name)
@@ -250,19 +235,26 @@ else
 end
 
 Config.category = category
+Config.originalPerlConfigToggle = nil
 
 function Config:HookPerlConfigToggle()
     if Perl_Config_Toggle then
-        local o = Perl_Config_Toggle
+        Config.originalPerlConfigToggle = Perl_Config_Toggle
         Perl_Config_Toggle = function()
-            o()
-            Perl_Config_Player_Buff_Display = function()
-                if Settings and Settings.OpenToCategory  then
-                    Settings.OpenToCategory(Config.category:GetID())
-                else
-                    InterfaceOptionsFrame_OpenToCategory(Config.frame)
-                    InterfaceOptionsFrame_OpenToCategory(Config.frame)
+            Config.originalPerlConfigToggle()
+            if Perl_Config_Player_Buff_Display then
+                Perl_Config_Player_Buff_Display = function()
+                    Perl_Config_Toggle()
+                    if Settings and Settings.OpenToCategory  then
+                        Settings.OpenToCategory(Config.category:GetID())
+                    else
+                        InterfaceOptionsFrame_OpenToCategory(Config.frame)
+                        InterfaceOptionsFrame_OpenToCategory(Config.frame)
+                    end
                 end
+                -- unhook when done
+                Perl_Config_Toggle = Config.originalPerlConfigToggle
+                Config.originalPerlConfigToggle = nil
             end
         end
     end

@@ -1,3 +1,10 @@
+### 70
+
+* Options can now be opened via the Perl Config panel like before
+* Fixed potential protected call issues by updated code to latest version
+* Code clean up
+
+
 ### 69
 
 + Added support for Mists of Pandaria

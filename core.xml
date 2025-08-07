@@ -36,15 +36,10 @@
         </Scripts>
     </Button>
 
-    <Button name="PPB_BuffButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true">
+    <Button name="PPB_BuffButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true" registerForClicks="RightButtonDown, RightButtonUp">
         <Attributes>
             <Attribute name="type2" value="cancelaura" />
         </Attributes>
-        <Scripts>
-            <OnLoad>
-                self:RegisterForClicks("RightButtonDown", "RightButtonUp");
-            </OnLoad>
-        </Scripts>
     </Button>
 
     <Button name="PPB_DebuffButtonTemplate" inherits="PPB_AuraButtonTemplate" virtual="true">

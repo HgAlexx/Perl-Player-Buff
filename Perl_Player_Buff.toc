@@ -1,8 +1,8 @@
-## Interface: 110107
+## Interface: 110200
 ## Title: Perl Player Buff
 ## Notes: Displays buffs below the Player Frame
 ## Author: mZHg at curseforge.com
-## Version: 11.1.7.@project-version@
+## Version: 11.2.0.@project-version@
 ## Dependencies: Perl_Config, Perl_Player
 ## SavedVariablesPerCharacter: Perl_Player_Buff_Settings
 

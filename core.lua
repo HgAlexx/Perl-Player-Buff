@@ -110,6 +110,7 @@ function PPB:PLAYER_LOGIN()
 
     _, Core.playerClass = UnitClass("player");
 
+    ns.Config:HookPerlConfigToggle()
 
     Core:SpecialBarOffset()
 
