@@ -6,6 +6,25 @@ local Utility = ns.Utility
 -- Local namespace
 local Widget = {}
 
+local GameTooltip = GameTooltip
+local function HideTooltip()
+    GameTooltip:Hide()
+end
+local function ShowTooltip(self)
+    if self.title then
+        GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 25)
+        GameTooltip:SetText(self.title)
+        if self.tiptext then
+            GameTooltip:AddLine(self.tiptext, 1, 1, 1)
+        end
+        if self.isSlider then
+            GameTooltip:AddLine(" ")
+            GameTooltip:AddLine("Scroll to change value.", 1, 1, 1)
+        end
+        GameTooltip:Show()
+    end
+end
+
 -- From Buffet which itself use tekKonfigHeading
 Widget.CreateHeaderTitle = function(parent, text, subtext)
     local title = parent:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
@@ -34,17 +53,21 @@ Widget.CreateHeaderTitle = function(parent, text, subtext)
 end
 
 Widget.CreateCheckbox = function(parent, text, tooltip, initValue, onClick)
-    local checkButton = CreateFrame("CheckButton", nil, parent, "InterfaceOptionsCheckButtonTemplate")
+    local checkButton = CreateFrame("CheckButton", nil, parent, "ChatConfigCheckButtonTemplate")
     checkButton.Text:SetText(text)
+    checkButton.title = text
     checkButton.tiptext = tooltip
     checkButton:SetChecked(initValue)
     checkButton:SetScript("OnClick", onClick)
+    checkButton:SetScript("OnEnter", ShowTooltip)
+    checkButton:SetScript("OnLeave", HideTooltip)
 
     return checkButton
 end
 
 Widget.CreateSlider = function(parent, text, tooltip, minVal, maxVal, onChanged)
     local slider = CreateFrame("Slider", nil, parent, "OptionsSliderTemplate")
+    slider.isSlider = true
     slider:SetWidth(500)
     slider:SetOrientation('HORIZONTAL')
     slider:SetMinMaxValues(minVal, maxVal)
@@ -55,6 +78,7 @@ Widget.CreateSlider = function(parent, text, tooltip, minVal, maxVal, onChanged)
     slider.Text:SetPoint("BOTTOMLEFT", slider, "TOPLEFT")
     slider.Low:SetText(minVal)
     slider.High:SetText(maxVal)
+    slider.title = text
     slider.tiptext = tooltip
     slider.currentValue = nil
     slider:SetScript("OnValueChanged", function(self, value)
@@ -72,9 +96,9 @@ Widget.CreateSlider = function(parent, text, tooltip, minVal, maxVal, onChanged)
             value = value -1
         end
         self.SetValue(self, value)
-        -- onChanged(self, value, self.currentValue)
-        -- self.currentValue = value
     end)
+    slider:SetScript("OnEnter", ShowTooltip)
+    slider:SetScript("OnLeave", HideTooltip)
 
     return slider
 end

@@ -11,17 +11,6 @@ local Widget = ns.Widget
 local Config = {}
 local addonNameProper = "Perl Player Buff"
 
-local GameTooltip = GameTooltip
-local function HideTooltip()
-    GameTooltip:Hide()
-end
-local function ShowTooltip(self)
-    if self.tiptext then
-        GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:SetText(self.tiptext, nil, nil, nil, nil, true)
-    end
-end
-
 Config.title = nil
 Config.subtitle = nil
 
@@ -47,10 +36,19 @@ Config.sliderBuffPerRow = nil
 Config.sliderMaxNumberOfRow = nil
 
 
-local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
-frame.name = "Perl Player Buff"
-frame:Hide()
-frame:SetScript("OnShow", function()
+local frame_base = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
+frame_base.name = "Perl Player Buff"
+frame_base:Hide()
+frame_base:SetScript("OnShow", function()
+    local scrollFrame = CreateFrame("ScrollFrame", nil, frame_base, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", 0, 0)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -27, 0)
+
+    local frame = CreateFrame("Frame")
+    scrollFrame:SetScrollChild(frame)
+    frame:SetWidth(frame_base:GetWidth()-18)
+    frame:SetHeight(1)
+
     Config.title, Config.subtitle = Widget.CreateHeaderTitle(
         frame,
         "Perl Player Buff",
@@ -162,7 +160,7 @@ frame:SetScript("OnShow", function()
     Config.sliderAnchorLocation:SetValue(Core.settings.anchorLocation)
 
     Config.sliderOffsetVertical = Widget.CreateSlider(
-        frame,"Offset - vertical", "", -250, 250,
+        frame,"Offset - vertical", "Adjust the vertical position of the buff and debuff frames.", -250, 250,
         function(self, value, preValue)
             self.Text:SetText("Offset - vertical: " .. tostring(value))
             Core:ChangeSettings_OffsetVertical(value)
@@ -171,7 +169,7 @@ frame:SetScript("OnShow", function()
     Config.sliderOffsetVertical:SetValue(Core.settings.offsetVertical)
 
     Config.sliderOffsetHorizontal = Widget.CreateSlider(
-        frame, "Offset - horizontal", "", -250, 250,
+        frame, "Offset - horizontal", "Adjust the horizontal position of the buff and debuff frames.", -250, 250,
         function(self, value, preValue)
             self.Text:SetText("Offset - horizontal: " .. tostring(value))
             Core:ChangeSettings_OffsetHorizontal(value)
@@ -180,7 +178,7 @@ frame:SetScript("OnShow", function()
     Config.sliderOffsetHorizontal:SetValue(Core.settings.offsetHorizontal)
 
     Config.sliderSpacingVertical = Widget.CreateSlider(
-        frame, "Spacing - vertical", "", -100, 100,
+        frame, "Spacing - vertical", "Adjust the vertical gap between rows of buffs or debuffs.", -100, 100,
         function(self, value, preValue)
             self.Text:SetText("Spacing - vertical: " .. tostring(value))
             Core:ChangeSettings_SpacingVertical(value)
@@ -189,7 +187,7 @@ frame:SetScript("OnShow", function()
     Config.sliderSpacingVertical:SetValue(Core.settings.spacingVertical)
 
     Config.sliderSpacingHorizontal = Widget.CreateSlider(
-        frame, "Spacing - horizontal", "", -100, 100,
+        frame, "Spacing - horizontal", "Adjust the horizontal gap between buffs or debuffs.", -100, 100,
         function(self, value, preValue)
             self.Text:SetText("Spacing - horizontal: " .. tostring(value))
             Core:ChangeSettings_SpacingHorizontal(value)
@@ -198,7 +196,7 @@ frame:SetScript("OnShow", function()
     Config.sliderSpacingHorizontal:SetValue(Core.settings.spacingHorizontal)
 
     Config.sliderScaling = Widget.CreateSlider(
-        frame, "Scaling", "", 10, 200,
+        frame, "Scaling", "Adjust the overall size of the buff and debuff frames.", 10, 200,
         function(self, value, preValue)
             self.Text:SetText("Scaling: " .. tostring(value) .. "%")
             if value >= 10 and value <= 200 then
@@ -209,9 +207,9 @@ frame:SetScript("OnShow", function()
     Config.sliderScaling:SetValue(Core.settings.scaling * 100)
 
     Config.sliderCooldownScale = Widget.CreateSlider(
-        frame, "Cooldown scale", "Scale the entire cooldown widget, including its countdown text and swipe.", 10, 200,
+        frame, "Cooldown scaling", "Adjust the size of the cooldown.", 10, 200,
         function(self, value, preValue)
-            self.Text:SetText("Cooldown scale: " .. tostring(value) .. "%")
+            self.Text:SetText("Cooldown scaling: " .. tostring(value) .. "%")
             if value >= 10 and value <= 200 then
                 Core:ChangeSettings_CooldownScale(value / 100)
             end
@@ -220,7 +218,7 @@ frame:SetScript("OnShow", function()
     Config.sliderCooldownScale:SetValue(Core.settings.cooldownScale * 100)
 
     Config.sliderBuffPerRow = Widget.CreateSlider(
-        frame, "Buff per row", "", 1, 40,
+        frame, "Buff per row", "Set the maximum number of buffs or debuffs displayed in each row.", 1, 40,
         function(self, value, preValue)
             self.Text:SetText("Buff per row: " .. tostring(value))
             if value >= 1 and value <= 40 then
@@ -231,7 +229,7 @@ frame:SetScript("OnShow", function()
     Config.sliderBuffPerRow:SetValue(Core.settings.buffPerRow)
 
     Config.sliderMaxNumberOfRow = Widget.CreateSlider(
-        frame, "Maximum number of row", "", 1, 40,
+        frame, "Maximum number of row", "Set the maximum number of rows of buffs or debuffs to display.", 1, 40,
         function(self, value, preValue)
             self.Text:SetText("Maximum number of row: " .. tostring(value))
             if value >= 1 and value <= 40 then
@@ -244,7 +242,7 @@ frame:SetScript("OnShow", function()
     frame:SetScript("OnShow", nil)
 end)
 
-Config.frame = frame
+Config.frame = frame_base
 
 local category = nil
 
