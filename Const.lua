@@ -5,6 +5,7 @@ local Const = {}
 
 Const.defaultSettings = {
     enabled = true,
+    hideBlizzardBuffFrame = true,
     offsetVertical = 0,
     offsetHorizontal = 0,
     spacingVertical = 2,
@@ -13,6 +14,7 @@ Const.defaultSettings = {
     buffPerRow = 10,
     maxNumberOfRow = 3,
     showNativeCooldown = false,
+    cooldownScale = 0.7,
     showOriginalTextTimer = true,
     showSecond = 2, -- 0 = hidden, 1 = show, 2 = show only under 10 minutes
     weaponBuff = true,

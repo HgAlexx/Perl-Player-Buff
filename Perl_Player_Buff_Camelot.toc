@@ -1,0 +1,25 @@
+## Interface: 16001
+## Title: Perl Player Buff
+## Notes: Displays buffs below the Player Frame
+## Author: mZHg at curseforge.com
+## Version: 1.16.1.@project-version@
+## IconTexture: Interface\Icons\Inv_misc_gem_pearl_01
+## X-Icon: Interface\Icons\Inv_misc_gem_pearl_01
+## SavedVariablesPerCharacter: Perl_Player_Buff_Settings
+## AddonCompartmentFunc: PPB_OnCompartmentClick
+## AddonCompartmentFuncOnEnter: PPB_OnCompartmentEnter
+## AddonCompartmentFuncOnLeave: PPB_OnCompartmentLeave
+
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+
+Utility.lua
+Widget.lua
+Const.lua
+
+core.xml
+core_retail.xml
+core.lua
+config.lua
+broker.lua

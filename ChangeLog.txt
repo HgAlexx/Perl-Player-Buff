@@ -1,3 +1,11 @@
+### 71
+
+* Updated to support new Retail and Forever API
+* Perl Player Buff will now anchor to various player unit frames, including Blizzard
+* Dropped all unused translations
+* Updated TOC
+
+
 ### 70
 
 * Options can now be opened via the Perl Config panel like before

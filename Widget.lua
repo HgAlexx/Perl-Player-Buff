@@ -63,6 +63,18 @@ Widget.CreateSlider = function(parent, text, tooltip, minVal, maxVal, onChanged)
             self.currentValue = value
         end
     end)
+    slider:SetScript("OnMouseWheel", function(self, delta)
+        local value = self.currentValue;
+        if (delta > 0) then
+            value = value + 1
+        end
+        if (delta < 0) then
+            value = value -1
+        end
+        self.SetValue(self, value)
+        -- onChanged(self, value, self.currentValue)
+        -- self.currentValue = value
+    end)
 
     return slider
 end

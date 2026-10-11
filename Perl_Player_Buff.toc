@@ -1,10 +1,14 @@
-## Interface: 110200
+## Interface: 120100
 ## Title: Perl Player Buff
 ## Notes: Displays buffs below the Player Frame
 ## Author: mZHg at curseforge.com
-## Version: 11.2.0.@project-version@
-## Dependencies: Perl_Config, Perl_Player
+## Version: 12.1.0.@project-version@
+## IconTexture: Interface\Icons\Inv_misc_gem_pearl_01
+## X-Icon: Interface\Icons\Inv_misc_gem_pearl_01
 ## SavedVariablesPerCharacter: Perl_Player_Buff_Settings
+## AddonCompartmentFunc: PPB_OnCompartmentClick
+## AddonCompartmentFuncOnEnter: PPB_OnCompartmentEnter
+## AddonCompartmentFuncOnLeave: PPB_OnCompartmentLeave
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
@@ -14,18 +18,9 @@ Utility.lua
 Widget.lua
 Const.lua
 
-Localizations\Localization.enUS.lua
-
-Localizations\Localization.deDE.lua
-Localizations\Localization.esES.lua
-Localizations\Localization.esMX.lua
-Localizations\Localization.frFR.lua
-Localizations\Localization.koKR.lua
-Localizations\Localization.ruRU.lua
-Localizations\Localization.zhCN.lua
-Localizations\Localization.zhTW.lua
-
 core.xml
+core_retail.xml
 core.lua
 config.lua
 broker.lua
+

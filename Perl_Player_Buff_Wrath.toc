@@ -3,7 +3,8 @@
 ## Notes: Displays buffs below the Player Frame
 ## Author: mZHg at curseforge.com
 ## Version: 3.4.3.@project-version@
-## Dependencies: Perl_Config, Perl_Player
+## IconTexture: Interface\Icons\Inv_misc_gem_pearl_01
+## X-Icon: Interface\Icons\Inv_misc_gem_pearl_01
 ## SavedVariablesPerCharacter: Perl_Player_Buff_Settings
 
 Libs\LibStub\LibStub.lua
@@ -13,17 +14,6 @@ Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Utility.lua
 Widget.lua
 Const.lua
-
-Localizations\Localization.enUS.lua
-
-Localizations\Localization.deDE.lua
-Localizations\Localization.esES.lua
-Localizations\Localization.esMX.lua
-Localizations\Localization.frFR.lua
-Localizations\Localization.koKR.lua
-Localizations\Localization.ruRU.lua
-Localizations\Localization.zhCN.lua
-Localizations\Localization.zhTW.lua
 
 core.xml
 core.lua

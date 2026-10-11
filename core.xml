@@ -3,7 +3,12 @@
         <Size x="30" y="30"/>
         <Layers>
             <Layer level="BACKGROUND">
-                <Texture name="$parentIcon" parentKey="Icon"/>
+                <Texture name="$parentIcon" parentKey="Icon">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
                 <FontString name="$parentCount" inherits="NumberFontNormal" parentKey="count">
                     <Anchors>
                         <Anchor point="BOTTOMRIGHT">

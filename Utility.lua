@@ -26,8 +26,10 @@ do
     Utility.IsRetail = false
 
     local _, _, _, interfaceVersion = GetBuildInfo()
-    if interfaceVersion >= 10000 and interfaceVersion < 20500 then
+    if interfaceVersion >= 10000 and interfaceVersion < 16000 then
         Utility.IsClassic = true
+    elseif interfaceVersion >= 16001 and interfaceVersion < 20000 then
+        Utility.IsRetail = true -- Camelot (Wow Forever) work like Retail
     elseif interfaceVersion >= 20500 and interfaceVersion < 30000 then
         Utility.IsTBC = true
     elseif interfaceVersion >= 30000 and interfaceVersion < 40000 then
@@ -36,13 +38,14 @@ do
         Utility.IsCataclysm = true
     elseif interfaceVersion >= 50000 and interfaceVersion < 60000 then
         Utility.IsMists = true
-    elseif interfaceVersion >= 90000 then
+    elseif interfaceVersion >= 120000 then
         Utility.IsRetail = true
     end
 end
 
 function Utility.GetTime()
-    return (debugprofilestop() / 1000)
+    -- return (debugprofilestop() / 1000)
+    return GetTime()
 end
 
 function Utility.Print(...)

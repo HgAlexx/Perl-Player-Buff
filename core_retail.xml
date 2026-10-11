@@ -1,0 +1,73 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <ScopedModifier useForbiddenObjectTable="true">
+        <AuraButton name="PPB_RetailAuraButtonTemplate" virtual="true">
+            <Size x="30" y="30"/>
+            <Frames>
+                <Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Cooldown>
+            </Frames>
+            <Layers>
+                <Layer level="BACKGROUND">
+                    <Texture name="$parentIcon" parentKey="Icon">
+                        <Anchors>
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="BOTTOMRIGHT"/>
+                        </Anchors>
+                    </Texture>
+                    <FontString name="$parentCount" inherits="NumberFontNormal" parentKey="Count">
+                        <Anchors>
+                            <Anchor point="BOTTOMRIGHT">
+                                <Offset x="-2" y="2"/>
+                            </Anchor>
+                        </Anchors>
+                    </FontString>
+                    <FontString name="$parentDuration" inherits="GameFontNormalSmall" parentKey="Duration">
+                        <Anchors>
+                            <Anchor point="TOP" relativePoint="BOTTOM">
+                                <Offset x="0" y="-1"/>
+                            </Anchor>
+                        </Anchors>
+                    </FontString>
+                </Layer>
+            </Layers>
+        </AuraButton>
+
+        <AuraButton name="PPB_RetailDebuffButtonTemplate" virtual="true">
+            <Layers>
+                <Layer level="OVERLAY">
+                    <Texture name="$parentBorder" file="Interface\Buttons\UI-Debuff-Overlays" parentKey="Border">
+                        <Size x="32" y="32"/>
+                        <Anchors>
+                            <Anchor point="CENTER"/>
+                        </Anchors>
+                        <TexCoords left="0.296875" right="0.5703125" top="0" bottom="0.515625"/>
+                    </Texture>
+                    <FontString name="$parentSymbol" inherits="TextStatusBarText" parentKey="Symbol">
+                        <Anchors>
+                            <Anchor point="TOPLEFT">
+                                <Offset x="2" y="-2"/>
+                            </Anchor>
+                        </Anchors>
+                    </FontString>
+                </Layer>
+            </Layers>
+        </AuraButton>
+
+        <AuraButton name="PPB_RetailTempEnchantButtonTemplate" virtual="true">
+            <Layers>
+                <Layer level="OVERLAY">
+                    <Texture name="$parentBorder" file="Interface\Buttons\UI-TempEnchant-Border" parentKey="Border">
+                        <Size x="32" y="32"/>
+                        <Anchors>
+                            <Anchor point="CENTER"/>
+                        </Anchors>
+                    </Texture>
+                </Layer>
+            </Layers>
+        </AuraButton>
+    </ScopedModifier>
+</Ui>

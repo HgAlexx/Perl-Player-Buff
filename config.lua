@@ -26,6 +26,7 @@ Config.title = nil
 Config.subtitle = nil
 
 Config.cbEnabled = nil
+Config.cbHideBlizzardBuffFrame = nil
 Config.cbHandleWeaponBuff = nil
 Config.cbShowOriginalTextTimer = nil
 Config.cbShowNativeCooldown = nil
@@ -40,6 +41,7 @@ Config.sliderSpacingVertical = nil
 Config.sliderSpacingHorizontal = nil
 
 Config.sliderScaling = nil
+Config.sliderCooldownScale = nil
 
 Config.sliderBuffPerRow = nil
 Config.sliderMaxNumberOfRow = nil
@@ -66,6 +68,14 @@ frame:SetScript("OnShow", function()
         end)
     Config.cbEnabled:SetPoint("TOPLEFT", Config.subtitle, "BOTTOMLEFT", 0, -16)
 
+    Config.cbHideBlizzardBuffFrame = Widget.CreateCheckbox(
+        frame, "Hide Blizzard Buff Frame", "Check this to hide the Blizzard buff and debuff frames",
+        Core.settings.hideBlizzardBuffFrame,
+        function (self)
+            Core:ChangeSettings_HideBlizzardBuffFrame(self:GetChecked())
+        end)
+    Config.cbHideBlizzardBuffFrame:SetPoint("TOPLEFT", Config.cbEnabled, "BOTTOMLEFT", 0, -10)
+
     Config.cbHandleWeaponBuff = Widget.CreateCheckbox(
         frame, "Handle Weapons Buffs", "Check this to handle weapon's buffs", Core.settings.weaponBuff,
         function (self)
@@ -86,7 +96,7 @@ frame:SetScript("OnShow", function()
                 Core:ChangeSettings_ShowOriginalTextTimer(false)
             end
         end)
-    Config.cbShowOriginalTextTimer:SetPoint("TOPLEFT", Config.cbEnabled, "BOTTOMLEFT", 0, -10)
+    Config.cbShowOriginalTextTimer:SetPoint("TOPLEFT", Config.cbHideBlizzardBuffFrame, "BOTTOMLEFT", 0, -10)
 
     -- parent, text, tooltip, minVal, maxVal, initValue, onChanged
     Config.sliderShowSecond = Widget.CreateSlider(
@@ -198,6 +208,17 @@ frame:SetScript("OnShow", function()
     Config.sliderScaling:SetPoint("TOPLEFT", Config.sliderSpacingHorizontal, "BOTTOMLEFT", 0, -30)
     Config.sliderScaling:SetValue(Core.settings.scaling * 100)
 
+    Config.sliderCooldownScale = Widget.CreateSlider(
+        frame, "Cooldown scale", "Scale the entire cooldown widget, including its countdown text and swipe.", 10, 200,
+        function(self, value, preValue)
+            self.Text:SetText("Cooldown scale: " .. tostring(value) .. "%")
+            if value >= 10 and value <= 200 then
+                Core:ChangeSettings_CooldownScale(value / 100)
+            end
+        end)
+    Config.sliderCooldownScale:SetPoint("TOPLEFT", Config.sliderScaling, "BOTTOMLEFT", 0, -30)
+    Config.sliderCooldownScale:SetValue(Core.settings.cooldownScale * 100)
+
     Config.sliderBuffPerRow = Widget.CreateSlider(
         frame, "Buff per row", "", 1, 40,
         function(self, value, preValue)
@@ -206,7 +227,7 @@ frame:SetScript("OnShow", function()
                 Core:ChangeSettings_BuffPerRow(value)
             end
         end)
-    Config.sliderBuffPerRow:SetPoint("TOPLEFT", Config.sliderScaling, "BOTTOMLEFT", 0, -30)
+    Config.sliderBuffPerRow:SetPoint("TOPLEFT", Config.sliderCooldownScale, "BOTTOMLEFT", 0, -30)
     Config.sliderBuffPerRow:SetValue(Core.settings.buffPerRow)
 
     Config.sliderMaxNumberOfRow = Widget.CreateSlider(
