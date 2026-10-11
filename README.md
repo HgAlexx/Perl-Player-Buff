@@ -1,4 +1,6 @@
-**Perl Player Buff** was originally a plugin for [Global](https://www.curseforge.com/members/glow_ball/projects)'s addon [**Perl Classic Unit Frames**](https://www.curseforge.com/wow/addons/perl-classic-unit-frames). It can now be used with many player unit frame addons, including Blizzard default player unit frame.
+**Perl Player Buff** was originally a plugin for [Global](https://www.curseforge.com/members/glow_ball/projects)'s addon [**Perl Classic Unit Frames**](https://www.curseforge.com/wow/addons/perl-classic-unit-frames).
+
+**New**: It can now be used with **many player unit frame addons**, including Blizzard.
 
 ---
 
@@ -6,15 +8,20 @@ Feel free to report any bug or request any feature [here](https://github.com/HgA
 
 ---
 
+**Known issues**:
+- Weapon buffs are not working on Forever at the moment due to a Blizzard API defect
+
+---
+
 **Features**:
 
-- **Perl Player Buff** will now anchor to various player unit frames, currently supporting:
+- **New**: Will now anchor to various player unit frames, including:
   - Blizzard default player unit frame
-  - Various Perl forks (XPerl, ZPerl, TPerl)
+  - Various Perl forks (Perl, XPerl, ZPerl, TPerl)
   - ElvUI
   - Shadowed Unit Frames
-  - Feel free to request support for other addons!
-- Move buffs and debuffs around the Player frame
+  - **Please report any anchoring issue!**
+- Move buffs and debuffs around the supported player unit  frame
 - Handle weapon buffs
 - Show/hide original timer under buff/debuff
   - With/without seconds
@@ -27,8 +34,8 @@ Feel free to report any bug or request any feature [here](https://github.com/HgA
 - Configurable buffs/debuff per row
 - Configurable maximum number of rows
 
-All features can be configured from the Blizzard interface menu.
+Feel free to request anchoring support for other addons!
 
-The new option frame provides a LibDataBroker launcher button which opens this menu.
+All features can be configured from the Blizzard interface menu.
 
 Settings can also be changed with `/ppb command <value>`. Run `/ppb` for the command list.

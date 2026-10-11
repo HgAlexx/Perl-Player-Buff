@@ -172,7 +172,6 @@ end
 
 function PPB:PLAYER_LOGIN()
     self:UnregisterEvent("PLAYER_LOGIN")
-    self:RegisterEvent("PLAYER_REGEN_ENABLED")
     self:RegisterEvent("PLAYER_STARTED_MOVING")
 
     self.PLAYER_LOGIN = nil
@@ -193,11 +192,10 @@ function PPB:PLAYER_LOGIN()
     Utility.Print(Core.Version, "Loaded!")
 end
 
-function PPB:PLAYER_REGEN_ENABLED()
-    PPB:KeepBuffFrameHidden()
-end
-
 function PPB:PLAYER_STARTED_MOVING()
+    -- Unfortunately the BuffFrame seams to be poping back from time to time
+    -- We use this event to "frequently" check and re-hide it if needed
+    -- KeepBuffFrameHiddenWork is debounced for 10 seconds
     PPB:KeepBuffFrameHidden()
 end
 
