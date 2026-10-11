@@ -239,7 +239,7 @@ frame_base:SetScript("OnShow", function()
     Config.sliderMaxNumberOfRow:SetPoint("TOPLEFT", Config.sliderBuffPerRow, "BOTTOMLEFT", 0, -30)
     Config.sliderMaxNumberOfRow:SetValue(Core.settings.maxNumberOfRow)
 
-    frame:SetScript("OnShow", nil)
+    frame_base:SetScript("OnShow", nil)
 end)
 
 Config.frame = frame_base
