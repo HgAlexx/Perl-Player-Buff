@@ -1,3 +1,8 @@
+### 73
+
+* Properly fixed default BuffFrame poping back
+
+
 ### 72
 
 * Fixed issue with config panel

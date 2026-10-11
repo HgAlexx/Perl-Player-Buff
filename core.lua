@@ -172,8 +172,6 @@ end
 
 function PPB:PLAYER_LOGIN()
     self:UnregisterEvent("PLAYER_LOGIN")
-    self:RegisterEvent("PLAYER_STARTED_MOVING")
-
     self.PLAYER_LOGIN = nil
 
     _, Core.playerClass = UnitClass("player");
@@ -190,22 +188,6 @@ function PPB:PLAYER_LOGIN()
     Core:UpdateBuffFrame()
 
     Utility.Print(Core.Version, "Loaded!")
-end
-
-function PPB:PLAYER_STARTED_MOVING()
-    -- Unfortunately the BuffFrame seams to be poping back from time to time
-    -- We use this event to "frequently" check and re-hide it if needed
-    -- KeepBuffFrameHiddenWork is debounced for 10 seconds
-    PPB:KeepBuffFrameHidden()
-end
-
-local lastMovingUpdate
-function PPB:KeepBuffFrameHidden()
-    local currentTime = Utility.GetTime()
-    if not lastMovingUpdate or currentTime - lastMovingUpdate >= 10 then
-        lastMovingUpdate = currentTime
-        Core:UpdateBuffFrame()
-    end
 end
 
 function PPB:PLAYER_TOTEM_UPDATE()
@@ -239,29 +221,36 @@ function Core:UpdateEnabled()
     end
 end
 
+function Core:HideAuraFrame(frame)
+    if frame then
+        frame:UnregisterAllEvents()
+        frame:Hide()
+    end
+end
+
+function Core:ShowAuraFrame(frame)
+    if frame then
+        frame:Show()
+        -- Taken from BuffFrame.lua
+        frame:RegisterUnitEvent("UNIT_AURA", "player", "vehicle");
+        frame:RegisterEvent("GROUP_ROSTER_UPDATE");
+        frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
+        frame:RegisterEvent("PLAYER_ENTERING_WORLD");
+        frame:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
+    end
+end
+
 function Core:UpdateBuffFrame()
     if InCombatLockdown() then
         return
     end
 
     if Core.settings.enabled and Core.settings.hideBlizzardBuffFrame then
-        if BuffFrame then
-            -- BuffFrame:UnregisterEvent("UNIT_AURA")
-            BuffFrame:Hide()
-        end
-        if DebuffFrame then
-            -- DebuffFrame:UnregisterEvent("UNIT_AURA")
-            DebuffFrame:Hide()
-        end
+        Core:HideAuraFrame(BuffFrame)
+        Core:HideAuraFrame(DebuffFrame)
     else
-        if BuffFrame then
-            BuffFrame:Show()
-            -- BuffFrame:RegisterEvent("UNIT_AURA")
-        end
-        if DebuffFrame then
-            DebuffFrame:Show()
-            -- DebuffFrame:RegisterEvent("UNIT_AURA")
-        end
+        Core:ShowAuraFrame(BuffFrame)
+        Core:ShowAuraFrame(DebuffFrame)
     end
 end
 
